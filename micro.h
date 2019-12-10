@@ -2,6 +2,7 @@
 #define MICRO_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 struct mos6502;
 typedef struct mos6502 mos6502_t;
@@ -28,7 +29,7 @@ struct mos6502 {
 
 mos6502_t * micro_crear();
 void micro_destruir(mos6502_t *);
-void cargar_rom(mos6502_t *,char *);
+bool cargar_rom(mos6502_t *,char *);
 
 
 void ejecutar_instruccion(mos6502_t * p_mos);

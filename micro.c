@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct {
     uint8_t codigo;     // Opcode.
@@ -38,7 +39,7 @@ mos6502_t *micro_crear(){
 }
 
 
-void micro_destruir(mos6502_t * icro){
+void micro_destruir(mos6502_t * micro){
     free(micro->inst);
     free (micro);
 }
