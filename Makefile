@@ -14,6 +14,8 @@ status.o: status.c status.h
 	$(CC) $(CFLAGS) -c status.c
 diccionario.o: diccionario.c diccionario.h operaciones.h direccionamiento.h micro.h
 	$(CC) $(CFLAGS) -c diccionario.c
+direccionamiento.o: direccionamiento.c direccionamiento.h micro.h
+	$(CC) $(CFLAGS) -c direccionamiento.c
 operaciones.o: operaciones.c operaciones.h micro.h status.h
 	$(CC) $(CFLAGS) -c operaciones.c
 micro.o: micro.c micro.h operaciones.h direccionamiento.h

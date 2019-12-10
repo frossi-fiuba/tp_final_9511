@@ -4,12 +4,25 @@
 #include "micro.h"
 
 
-typedef void(*f_direccionamiento_t)(mos6502_t *, instruccion_t *);
+typedef void(*f_direccionamiento_t)(mos6502_t *);
+void absoluta_all (mos6502_t *p_mos, uint8_t add);
 
-void implicito (mos6502_t * p_mos, instruccion_t * p_inst);
-void acumulador (mos6502_t * p_mos, instruccion_t * p_inst);
-void inmediata (mos6502_t * p_mos, instruccion_t * p_inst);
-void absoluta (mos6502_t * p_mos, instruccion_t * p_inst);
+// no indexados, no en memoria
+void implicito (mos6502_t *p_mos);
+void acumulador (mos6502_t *p_mos);
+void inmediata (mos6502_t *p_mos);
+// no indexados, en memoria
+void relativa (mos6502_t *p_mos);
+void absoluta (mos6502_t *p_mos);
+void pagina_cero (mos6502_t *p_mos);
+void indirecta (mos6502_t *p_mos);
+// indexadas
+void absoluta_x (mos6502_t *p_mos);
+void absoluta_y (mos6502_t *p_mos);
+void pagina_cero_x (mos6502_t *p_mos);
+void pagina_cero_y (mos6502_t *p_mos);
+void index_indirecta_x (mos6502_t *p_mos);
+void indirecta_index_y (mos6502_t *p_mos);
 
 
 #endif
