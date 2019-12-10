@@ -198,6 +198,7 @@ int main () {
     ejecutar_instruccion(micro);
     assert_microprocesador("CMP", micro, 0x0F05, 0x10, 0, 0, 0x01, 6);
 
+    micro_destruir(micro);
 
 	return 0;
 }
