@@ -40,7 +40,6 @@ mos6502_t *micro_crear(){
 
     setear_log(micro ,"log_d");
 
-
     return micro;
 }
 

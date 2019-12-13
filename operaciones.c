@@ -334,11 +334,15 @@ void RTS (mos6502_t *p_mos){
 }
 
 void SBC (mos6502_t *p_mos){
-	p_mos->a += *(p_mos->inst->m) - (!get_status((&p_mos->status),CARRY));
+	uint16_t aux = p_mos->a + *(p_mos->inst->m) - (!get_status((&p_mos->status),CARRY));
+
+	set_carry (&(p_mos->status), ~p_mos->a);
+
+	p_mos->a = aux;
 
 	set_zero (&(p_mos->status), p_mos->a);
 	set_negative (&(p_mos->status), p_mos->a);
-	set_carry (&(p_mos->status), p_mos->a);
+	
 }
 
 void SEC (mos6502_t *p_mos){ 
