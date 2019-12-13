@@ -22,30 +22,8 @@ struct mos6502 {
     long ciclos;        // Cantidad de ciclos totales de ejecución.
 };
 
-void absoluta_all (mos6502_t *p_mos, uint8_t add){
-	//(p_mos->inst->direccion) = el numero contenido por la direccion de memoria expicitada en los 2 bytes siguientes a la instruccion
-	uint8_t primer_byte  = (p_mos->mem)[(p_mos->pc)];  //primer bytee
-	uint8_t segundo_byte = (p_mos->mem)[(p_mos->pc) + 1]; //segundo bytee
-
-	uint16_t redir = ((segundo_byte << 8) | primer_byte) + add; // que pasa si hay carry? deberia hacer en 32 bits y check?
-
-	(p_mos->inst->direccion) = redir;
-	(p_mos->inst->m) = &((p_mos->mem)[redir]);
-	
-	(p_mos -> pc) += 2;
-}
-
-void pagina_cero_all (mos6502_t *p_mos, uint8_t add){
-
-	uint16_t redir = 0;
-	uint8_t aux =(p_mos->mem)[(p_mos->pc)] + add;
-	redir |= aux; //0x0000 | 0xAA = 0x00AA quizas simplemente igualarlo funcione
-
-	(p_mos->inst->direccion) = redir; // al final esta no creo ver DEC y CMP
-	(p_mos->inst->m) = &((p_mos->mem)[redir]); // cual de las dos? 
-
-	(p_mos-> pc) += 1;
-}
+static void absoluta_all (mos6502_t *p_mos, uint8_t add);
+static void pagina_cero_all (mos6502_t *p_mos, uint8_t add);
 
 void implicito (mos6502_t * p_mos){
 }
@@ -141,6 +119,33 @@ void indirecta_index_y (mos6502_t *p_mos){
 	(p_mos-> pc) += 1;
 
 }
+
+
+void absoluta_all (mos6502_t *p_mos, uint8_t add){
+	//(p_mos->inst->direccion) = el numero contenido por la direccion de memoria expicitada en los 2 bytes siguientes a la instruccion
+	uint8_t primer_byte  = (p_mos->mem)[(p_mos->pc)];  //primer bytee
+	uint8_t segundo_byte = (p_mos->mem)[(p_mos->pc) + 1]; //segundo bytee
+
+	uint16_t redir = ((segundo_byte << 8) | primer_byte) + add; // que pasa si hay carry? deberia hacer en 32 bits y check?
+
+	(p_mos->inst->direccion) = redir;
+	(p_mos->inst->m) = &((p_mos->mem)[redir]);
+	
+	(p_mos -> pc) += 2;
+}
+
+void pagina_cero_all (mos6502_t *p_mos, uint8_t add){
+
+	uint16_t redir = 0;
+	uint8_t aux =(p_mos->mem)[(p_mos->pc)] + add;
+	redir |= aux; //0x0000 | 0xAA = 0x00AA quizas simplemente igualarlo funcione
+
+	(p_mos->inst->direccion) = redir; // al final esta no creo ver DEC y CMP
+	(p_mos->inst->m) = &((p_mos->mem)[redir]); // cual de las dos? 
+
+	(p_mos-> pc) += 1;
+}
+
 
 
 

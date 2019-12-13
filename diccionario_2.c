@@ -2,7 +2,6 @@
 #include "direccionamiento.h"
 #include "operaciones.h"
 
-
 diccionario_t diccionario [256] = {
 
 	[0x69] = {ADC, inmediata, 2},

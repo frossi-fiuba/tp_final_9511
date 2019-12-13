@@ -34,39 +34,35 @@ int main(int argc, char *argv[]){
     if(argc > 6) 
       return 1; //Chequear que la condición esté bien.
     
-    if(!(argc % 2))
+    if(argc % 2)
         return 1;
 
     mos6502_t * micro = micro_crear(); // aca va puntero y crear micro
-    
+
     if(!micro) 
         return 1;
 
     for(size_t i = 2; i < argc; i += 2){
-        if(!strcmp(argv[i], "-ciclos")){
-            ciclos_max = atoi(argv[i + 1]); //Usar strtol en vez de atoi.
-            break;
-        }
-    }
-
-    for(size_t i = 2; i < argc; i += 2){
         if(!strcmp(argv[i], "-log")){
             strcpy(micro->log, argv[i + 1]); // verif?
-            break;
         }
-    }
-
-    for(size_t i = 2; i < argc; i += 2){
-        if(!strcmp(argv[i], "-halt")){
+       else if(!strcmp(argv[i], "-halt")){
             halt = strtol(argv[i+1], &halt_aux, 16); 
             if(halt_aux)
                 return 1;
+        }
+        else if(!strcmp(argv[i], "-ciclos")){
+            ciclos_max = atoi(argv[i + 1]); //Usar strtol en vez de atoi.
+        }
 
-            break;
+        else{
+            micro_destruir(micro);
+            return 1;
         }
     }
 
-    if(!cargar_rom(micro, argv[2])) 
+
+    if(!cargar_rom(micro, argv[1])) 
         return 1;
 
     uint8_t primer_byte  = (micro->mem)[0xFFFC];  //primer byte
@@ -74,7 +70,7 @@ int main(int argc, char *argv[]){
 
     micro->pc = ((segundo_byte << 8) | primer_byte);
 
-    while (micro->ciclos < ciclos_max || micro->pc == halt){ // pc o puede ser inst->codigo?
+    while (micro->ciclos < ciclos_max || micro->pc != halt){ // pc o puede ser inst->codigo?
         ejecutar_instruccion(micro);
     }
 

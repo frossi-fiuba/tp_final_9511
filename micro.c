@@ -32,7 +32,7 @@ struct mos6502 {
 
 
 mos6502_t *micro_crear(){
-    mos6502_t *micro = malloc(sizeof(mos6502_t));
+    mos6502_t *micro = calloc(1, sizeof(mos6502_t));
 
     if(!micro)
         return NULL;
@@ -42,7 +42,10 @@ mos6502_t *micro_crear(){
 
 
 void micro_destruir(mos6502_t * micro){
+    free (micro->mem);
+    micro->mem = NULL;
     free(micro->inst);
+    micro->inst = NULL;
     free (micro);
 }
 
@@ -58,7 +61,7 @@ bool cargar_rom(mos6502_t *p_mos, char *nombre_archivo){
     
     if (n != 65536)
         return false;
-         // wtf son ROM pero si no M=Y no funca... lo deberia cargar ahi?
+ 
     // code
     fclose(f); 
 
