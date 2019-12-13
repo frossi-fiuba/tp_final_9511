@@ -41,7 +41,7 @@ void ADC(mos6502_t *p_mos){
 	set_zero (&(p_mos->status), aux);
 	set_negative (&(p_mos->status), aux);
 
-	(p_mos->a) = aux;
+	(p_mos->a) = aux2;
 }
 
 void AND (mos6502_t *p_mos){
@@ -334,11 +334,13 @@ void RTS (mos6502_t *p_mos){
 }
 
 void SBC (mos6502_t *p_mos){
-	uint16_t aux = p_mos->a + *(p_mos->inst->m) - (!get_status((&p_mos->status),CARRY));
-
+	uint16_t aux = p_mos->a + *(p_mos->inst->m);
+	set_overflow(&(p_mos->status), p_mos->a, *(p_mos->inst->m), aux);
+	uint16_t aux2 = aux - (!get_status((&p_mos->status),CARRY));
+	set_overflow(&(p_mos->status), aux, -(!get_status((&p_mos->status),CARRY)), aux);
 	set_carry (&(p_mos->status), ~p_mos->a);
 
-	p_mos->a = aux;
+	p_mos->a = aux2;
 
 	set_zero (&(p_mos->status), p_mos->a);
 	set_negative (&(p_mos->status), p_mos->a);
