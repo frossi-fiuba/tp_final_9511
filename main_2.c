@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-
+/*
 typedef struct {
     uint8_t codigo;     // Opcode.
     short ciclos;       // Cantidad de ciclos de la instrucción.
@@ -24,6 +24,7 @@ struct mos6502 {
 
     long ciclos;        // Cantidad de ciclos totales de ejecución.
 };
+*/
 
 int main(int argc, char *argv[]){
 
@@ -41,6 +42,7 @@ int main(int argc, char *argv[]){
 
     if(!micro) 
         return 1;
+    micro->log = 
 
     for(size_t i = 2; i < argc; i += 2){
         if(!strcmp(argv[i], "-log")){
@@ -62,14 +64,15 @@ int main(int argc, char *argv[]){
     }
 
 
-    if(!cargar_rom(micro, argv[1])) 
+    if(!cargar_rom(micro, argv[1])){ 
+        micro_destruir(micro);
         return 1;
+    }
 
     uint8_t primer_byte  = (micro->mem)[0xFFFC];  //primer byte
     uint8_t segundo_byte = (micro->mem)[0xFFFD];  //segundo byte
 
     micro->pc = ((segundo_byte << 8) | primer_byte);
-
     while (micro->ciclos < ciclos_max || micro->pc != halt){ // pc o puede ser inst->codigo?
         ejecutar_instruccion(micro);
     }

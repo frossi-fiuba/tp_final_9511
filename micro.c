@@ -57,10 +57,12 @@ bool cargar_rom(mos6502_t *p_mos, char *nombre_archivo){
         return false;
 
     p_mos->mem = malloc(65536*sizeof(uint8_t));
-    size_t n = fread(&(p_mos->mem[512]), sizeof(uint8_t), 65536-512,f); // kibibytes
+    size_t n = fread(p_mos->mem, sizeof(uint8_t), 65536,f); // kibibytes
     
-    if (n != 65536)
+    if (n != 65536){
+        fclose(f);
         return false;
+    }
  
     // code
     fclose(f); 
