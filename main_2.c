@@ -42,11 +42,13 @@ int main(int argc, char *argv[]){
 
     if(!micro) 
         return 1;
-    micro->log = 
 
     for(size_t i = 2; i < argc; i += 2){
         if(!strcmp(argv[i], "-log")){
-            strcpy(micro->log, argv[i + 1]); // verif?
+            if(!setear_log(micro ,argv[i+1])){
+                micro_destruir(micro);
+                return 1;
+            }
         }
        else if(!strcmp(argv[i], "-halt")){
             halt = strtol(argv[i+1], &halt_aux, 16); 
@@ -69,11 +71,7 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
-    uint8_t primer_byte  = (micro->mem)[0xFFFC];  //primer byte
-    uint8_t segundo_byte = (micro->mem)[0xFFFD];  //segundo byte
-
-    micro->pc = ((segundo_byte << 8) | primer_byte);
-    while (micro->ciclos < ciclos_max || micro->pc != halt){ // pc o puede ser inst->codigo?
+    while (get_ciclos(micro) < ciclos_max || get_ciclos(micro) != halt){ // pc o puede ser inst->codigo?
         ejecutar_instruccion(micro);
     }
 

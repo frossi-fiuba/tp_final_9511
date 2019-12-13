@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 typedef struct {
     uint8_t codigo;     // Opcode.
@@ -37,6 +38,9 @@ mos6502_t *micro_crear(){
     if(!micro)
         return NULL;
 
+    setear_log(micro ,"log_d");
+
+
     return micro;
 }
 
@@ -46,6 +50,8 @@ void micro_destruir(mos6502_t * micro){
     micro->mem = NULL;
     free(micro->inst);
     micro->inst = NULL;
+    free (micro->log);
+    micro->log = NULL;
     free (micro);
 }
 
@@ -67,9 +73,21 @@ bool cargar_rom(mos6502_t *p_mos, char *nombre_archivo){
     // code
     fclose(f); 
 
+    uint8_t primer_byte  = (p_mos->mem)[0xFFFC];  //primer byte
+    uint8_t segundo_byte = (p_mos->mem)[0xFFFD];  //segundo byte
+
+    p_mos->pc = ((segundo_byte << 8) | primer_byte);
+
     return true;
 }
 
+long get_ciclos(mos6502_t *p_mos){
+    return p_mos->ciclos;
+}
+
+uint16_t get_pc(mos6502_t *p_mos){
+    return p_mos->pc;
+}
 
 
 // Ejecuta una instrucción del microprocesador
@@ -77,7 +95,7 @@ void ejecutar_instruccion(mos6502_t * p_mos){
 
     uint8_t opcode = (p_mos->mem)[p_mos->pc]; 
 
-    setear_log(p_mos, p_mos->log);
+    addto_log(p_mos, p_mos->log);
 
     (p_mos->pc)++; 
 
@@ -101,16 +119,29 @@ void ejecutar_instruccion(mos6502_t * p_mos){
 
 }
 
-bool setear_log (mos6502_t * p_mos, char * nombre_archivo){
+bool addto_log (mos6502_t * p_mos, char * nombre_archivo){
 
     FILE * f = fopen(nombre_archivo, "a");
     if (!f)
         return false;
     fprintf(f,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp);
 
+    fclose(f);
     return true;
 
 }
+
+bool setear_log (mos6502_t * p_mos, char * nombre_archivo){
+    p_mos->log = malloc(strlen(nombre_archivo) + 1);
+    
+    if(!p_mos->log)
+        return false; 
+    
+    strcpy(p_mos->log, nombre_archivo); 
+
+    return true;
+}
+
 
 // Testea todos los registros del microprocesador contra los valores provistos
 void assert_microprocesador(const char *test, mos6502_t *m, uint16_t pc, uint8_t a, uint8_t x, uint8_t y, uint8_t status, uint8_t ciclos_micro) {
