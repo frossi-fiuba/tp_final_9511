@@ -8,16 +8,13 @@ typedef struct {
     uint8_t *m;         // Puntero al operando (registro o memoria).
     uint16_t direccion; // Dirección del operando (si corresponde).
 } instruccion_t;
-
 struct mos6502 {
     uint8_t a, x, y;    // Registros A, X e Y.
     uint16_t pc;        // Program counter.
     uint8_t status;     // Registro de status.
     uint8_t sp;         // Stack pointer.
     uint8_t *mem;       // Memoria.
-
     instruccion_t * inst; // puntero a la estructura de instruccion (actual)
-
     long ciclos;        // Cantidad de ciclos totales de ejecución.
 };*/
 
@@ -42,10 +39,11 @@ int main () {
         [0x0F00] = 0xA9, 0x10, 0xCD, 0x05, 0x0F, 0x0F,
     };
 
-    mos6502_t * micro = micro_crear(); // aca va puntero y crear micro
+    mos6502_t * micro = micro_crear();
 
     if (!micro)
         return 1;
+	
     // NOP:
     resetear_microprocesador(micro, mem, 0x0000);
     ejecutar_instruccion(micro);
@@ -198,7 +196,6 @@ int main () {
     ejecutar_instruccion(micro);
     assert_microprocesador("CMP", micro, 0x0F05, 0x10, 0, 0, 0x01, 6);
 
-    micro_destruir(micro);
 
 	return 0;
 }

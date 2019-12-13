@@ -1,5 +1,5 @@
 #include "micro.h"
-#include "diccionario.h"
+#include "diccionario_2.h"
 #include "direccionamiento.h"
 #include "operaciones.h"
 
@@ -23,7 +23,9 @@ struct mos6502 {
     uint8_t sp;         // Stack pointer.
     uint8_t *mem;       // Memoria.
 
-    instruccion_t * inst; // puntero a la estructura de instruccion (actual)
+    instruccion_t *inst; // puntero a la estructura de instruccion (actual)
+
+    char *log;  // locacion absoluta del archivo log donde grabar
 
     long ciclos;        // Cantidad de ciclos totales de ejecución.
 };
@@ -46,13 +48,21 @@ void micro_destruir(mos6502_t * micro){
 
 bool cargar_rom(mos6502_t *p_mos, char *nombre_archivo){
 
-    FILE *f = fopen(p_mos->mem,"rb");
-
+    FILE *f = fopen(nombre_archivo,"rb");
+    
     if (!f)
+        return false;
+
+    p_mos->mem = malloc(65536*sizeof(uint8_t));
+    size_t n = fread(&(p_mos->mem[512]), sizeof(uint8_t), 65536-512,f); // kibibytes
+    
+    if (n != 65536)
         return false;
          // wtf son ROM pero si no M=Y no funca... lo deberia cargar ahi?
     // code
     fclose(f); 
+
+    return true;
 }
 
 
@@ -60,29 +70,42 @@ bool cargar_rom(mos6502_t *p_mos, char *nombre_archivo){
 // Ejecuta una instrucción del microprocesador
 void ejecutar_instruccion(mos6502_t * p_mos){
 
-	uint8_t opcode = (p_mos->mem)[p_mos->pc]; 
+    uint8_t opcode = (p_mos->mem)[p_mos->pc]; 
 
-	(p_mos->pc)++; 
+    setear_log(p_mos, p_mos->log);
 
-	instruccion_t instruccion;
+    (p_mos->pc)++; 
 
-	(instruccion.codigo) = opcode;
+    instruccion_t instruccion;
 
-	(instruccion.ciclos) = diccionario[opcode].ciclos;
+    (instruccion.codigo) = opcode;
+
+    (instruccion.ciclos) = diccionario[opcode].ciclos;
 
     p_mos->inst = &instruccion;
-	
-	f_direccionamiento_t direccionamiento = diccionario[opcode].dir; 
+    
+    f_direccionamiento_t direccionamiento = diccionario[opcode].dir; 
 
-	direccionamiento(p_mos); // esta setea el operando para dsp poder acceder desde operacion al operando que corresponda
+    direccionamiento(p_mos); // esta setea el operando para dsp poder acceder desde operacion al operando que corresponda
 
-	f_operaciones_t operacion = diccionario[opcode].op;
+    f_operaciones_t operacion = diccionario[opcode].op;
 
-	operacion (p_mos);
+    operacion (p_mos);
 
-	(p_mos->ciclos) += (instruccion.ciclos);
+    (p_mos->ciclos) += (instruccion.ciclos);
+
 }
 
+bool setear_log (mos6502_t * p_mos, char * nombre_archivo){
+
+    FILE * f = fopen(nombre_archivo, "a");
+    if (!f)
+        return false;
+    fprintf(f,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp);
+
+    return true;
+
+}
 
 // Testea todos los registros del microprocesador contra los valores provistos
 void assert_microprocesador(const char *test, mos6502_t *m, uint16_t pc, uint8_t a, uint8_t x, uint8_t y, uint8_t status, uint8_t ciclos_micro) {
@@ -108,4 +131,3 @@ void resetear_microprocesador(mos6502_t *m, uint8_t *mem, uint16_t pc) {
 
     m->ciclos = 0;
 }
-

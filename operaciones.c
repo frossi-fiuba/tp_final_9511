@@ -32,11 +32,14 @@ static void TRANSFER(mos6502_t *p_mos, uint8_t from, uint8_t *to);
 
 void ADC(mos6502_t *p_mos){
 
-	uint16_t aux = (p_mos->a) + ( ( (p_mos->status) & CARRY) + * (p_mos->inst->m) ) ;
+	uint16_t aux = 0;
+
+	aux = (p_mos->a) + ( ( (p_mos->status) & CARRY) + * (p_mos->inst->m) ) ;
 
 	set_carry (&(p_mos->status), aux);
 	set_zero (&(p_mos->status), aux);
 	set_negative (&(p_mos->status), aux);
+	//set_overflow(&(p_mos->status), ) // NI IDEA comos setearlo llamarla 2 veces?
 
 	(p_mos->a) = aux;
 }
@@ -64,18 +67,18 @@ void ASL(mos6502_t *p_mos){
 
 void BCC (mos6502_t *p_mos){
 	if (!get_status(&(p_mos->status), CARRY))
-		p_mos->pc += *(p_mos->inst->m);
+		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
 void BCS (mos6502_t *p_mos){
 	if (get_status(&(p_mos->status), CARRY))
-		p_mos->pc += *(p_mos->inst->m);
+		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
 
 void BEQ (mos6502_t *p_mos){
 	if (get_status(&(p_mos->status), ZERO))
-		p_mos->pc += *(p_mos->inst->m);
+		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
 void BIT (mos6502_t *p_mos){
@@ -88,45 +91,49 @@ void BIT (mos6502_t *p_mos){
 
 void BMI (mos6502_t *p_mos){
 	if (get_status(&(p_mos->status), NEGATIVE))
-		p_mos->pc += *(p_mos->inst->m);
+		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
 void BNE (mos6502_t *p_mos){
-	if (!get_status(&(p_mos->status), NEGATIVE))
-		p_mos->pc += *(p_mos->inst->m);
+	if (get_status(&(p_mos->status), NEGATIVE))
+		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
 void BPL (mos6502_t *p_mos){
 	if (!get_status(&(p_mos->status), NEGATIVE))
-		p_mos->pc += *(p_mos->inst->m);
+		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
 void BRK (mos6502_t *p_mos){
 
-	uint8_t pc_lsbyte = (p_mos->pc) & 0x00FF;
-	uint8_t pc_msbyte = (p_mos->pc) & 0xFF00;
+	uint8_t pc_lsbyte = (p_mos->pc + 1) & 0x00FF;
+	uint8_t pc_msbyte = (p_mos->pc + 1) & 0xFF00;
 
-	p_mos->mem[p_mos->sp--] = pc_msbyte;
-	p_mos->mem[p_mos->sp--] = pc_lsbyte;
+	p_mos->mem[0x0100|p_mos->sp--] = pc_msbyte;
+	p_mos->mem[0x0100|p_mos->sp--] = pc_lsbyte; // cargue el pc
 
-	p_mos->mem[(p_mos->sp)--] = p_mos->status; // aca decrementado directo.
+	uint8_t aux_status = p_mos->status | (1<<4) | (1<<5); // quizas setear el status asi antes?
+	p_mos->mem[0x0100|p_mos->sp--] = aux_status; // aca decrementado directo.
 
+	set_status(&(p_mos->status), INTERRUPT_DISABLE, 1);
+	
 	uint8_t primer_byte  = (p_mos->mem)[0xFFFE];  //primer byte
 	uint8_t segundo_byte = (p_mos->mem)[0xFFFF];  //segundo byte
 
-	p_mos->pc = ((segundo_byte << 8) | primer_byte);
+	p_mos->pc = ((segundo_byte << 8) | primer_byte); //  esot no se... quizas no es a 0xFFF es un puntero a funcion
 
-	set_status(&(p_mos->status), BREAK, 1);
+	set_status(&(p_mos->status), BREAK, 1); // seteo break sigue haciendo falta?
+	
 }
 
 void BVC (mos6502_t *p_mos){
 	if (!get_status(&(p_mos->status), OVERFLOW))
-		p_mos->pc += *(p_mos->inst->m);
+		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
 void BVS (mos6502_t *p_mos){
 	if (get_status(&(p_mos->status), OVERFLOW))
-		p_mos->pc += *(p_mos->inst->m);
+		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
 void CLC(mos6502_t *p_mos){
@@ -223,8 +230,8 @@ void JSR (mos6502_t *p_mos){
 	uint8_t pc_lsbyte = (p_mos->pc - 1) & 0x00FF;
 	uint8_t pc_msbyte = (p_mos->pc - 1) & 0xFF00;
 
-	p_mos->mem[p_mos->sp--] = pc_msbyte;
-	p_mos->mem[p_mos->sp--] = pc_lsbyte;
+	p_mos->mem[0x0100|p_mos->sp--] = pc_msbyte;
+	p_mos->mem[0x0100|p_mos->sp--] = pc_lsbyte;
 
 	p_mos->pc = *(p_mos->inst->m);
 }
@@ -270,26 +277,26 @@ void ORA (mos6502_t *p_mos){
 }
 
 void PHA (mos6502_t *p_mos){
-	p_mos->mem[p_mos->sp] = p_mos->a;
-	p_mos->sp--;
+	p_mos->mem[0x0100|p_mos->sp--] = p_mos->a;
 }
 
 void PHP (mos6502_t *p_mos){
-	p_mos->mem[p_mos->sp] = p_mos->status;
-	p_mos->sp--;
+
+	uint8_t aux_status = p_mos->status | (1<<4) | (1<<5); 
+	p_mos->mem[0x0100|p_mos->sp--] = aux_status;
+
 }
 
 void PLA (mos6502_t *p_mos){
-	p_mos->a = p_mos->mem[p_mos->sp];
-	p_mos->sp++;
+	p_mos->a = p_mos->mem[0x0100|p_mos->sp++];
 
 	set_zero (&(p_mos->status), p_mos->a);
 	set_negative (&(p_mos->status), p_mos->a);
 }
 
 void PLP (mos6502_t *p_mos){
-	p_mos->status = p_mos->mem[p_mos->sp];
-	p_mos->sp++;
+	//p_mos->status = p_mos->mem[p_mos->sp];
+	p_mos->status |= (p_mos->mem[0x0100|p_mos->sp++]) & (0xCF); // tmb puede ser con los flags & BREAK & reservado
 }
 
 void ROL (mos6502_t *p_mos){
@@ -311,8 +318,8 @@ void ROR (mos6502_t *p_mos){
 void RTI (mos6502_t *p_mos){
 	PLP(p_mos);
 
-	uint8_t primer_byte  = (p_mos->mem)[p_mos->sp++];  //primer byte
-	uint8_t segundo_byte = (p_mos->mem)[p_mos->sp++];  //segundo byte
+	uint8_t primer_byte  = (p_mos->mem)[0x0100|p_mos->sp++];  //primer byte
+	uint8_t segundo_byte = (p_mos->mem)[0x0100|p_mos->sp++];  //segundo byte
 
 	p_mos->pc = ((segundo_byte << 8) | primer_byte);
 	
@@ -320,8 +327,8 @@ void RTI (mos6502_t *p_mos){
 
 void RTS (mos6502_t *p_mos){
 
-	uint8_t primer_byte  = (p_mos->mem)[p_mos->sp++];  //primer byte
-	uint8_t segundo_byte = (p_mos->mem)[p_mos->sp++];  //segundo byte
+	uint8_t primer_byte  = (p_mos->mem)[0x0100|p_mos->sp++];  //primer byte
+	uint8_t segundo_byte = (p_mos->mem)[0x0100|p_mos->sp++];  //segundo byte
 
 	p_mos->pc = ((segundo_byte << 8) | primer_byte) + 1;
 }

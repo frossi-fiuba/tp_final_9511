@@ -1,6 +1,5 @@
 #include "micro.h"
 #include "direccionamiento.h"
-#include "status.h"
 
 #include <stdint.h>
 
@@ -25,8 +24,8 @@ struct mos6502 {
 
 void absoluta_all (mos6502_t *p_mos, uint8_t add){
 	//(p_mos->inst->direccion) = el numero contenido por la direccion de memoria expicitada en los 2 bytes siguientes a la instruccion
-	uint8_t primer_byte  = (p_mos->mem)[(p_mos->pc)];  //primer byte
-	uint8_t segundo_byte = (p_mos->mem)[(p_mos->pc) + 1]; //segundo byte
+	uint8_t primer_byte  = (p_mos->mem)[(p_mos->pc)];  //primer bytee
+	uint8_t segundo_byte = (p_mos->mem)[(p_mos->pc) + 1]; //segundo bytee
 
 	uint16_t redir = ((segundo_byte << 8) | primer_byte) + add; // que pasa si hay carry? deberia hacer en 32 bits y check?
 
@@ -68,15 +67,10 @@ void absoluta (mos6502_t * p_mos){
 
 void relativa (mos6502_t *p_mos){
 
-	(p_mos->inst->m) = &((p_mos->mem)[p_mos->pc]); 
-	if(!get_status(p_mos->inst->m, NEGATIVE)){
-		(p_mos -> pc) += *(p_mos->inst->m);
-	}
-	else{
-		uint8_t *op = p_mos->inst->m; 
-		set_status(op, NEGATIVE, false);
-		(p_mos -> pc) -= *op; 
-	}
+	(p_mos->inst->m) = &((p_mos->mem)[p_mos->pc]);
+	
+	(p_mos -> pc) += 1; // deberia incrementarlo a esto se le sumaria el dato anterior. m
+
 }
 
 void pagina_cero (mos6502_t *p_mos){
@@ -85,13 +79,13 @@ void pagina_cero (mos6502_t *p_mos){
 
 void indirecta (mos6502_t *p_mos){
 
-	uint8_t primer_byte  = (p_mos->mem)[(p_mos->pc)];  //primer byte de la direecion a buscar el dato
-	uint8_t segundo_byte = (p_mos->mem)[(p_mos->pc) + 1]; //segundo byte de la direccion a buscar el dato
+	uint8_t primer_byte  = (p_mos->mem)[(p_mos->pc)];  //primer bytee de la direecion a buscar el dato
+	uint8_t segundo_byte = (p_mos->mem)[(p_mos->pc) + 1]; //segundo bytee de la direccion a buscar el dato
 
 	uint16_t redir = (segundo_byte << 8) | primer_byte; // se obtuvo el valor de la direccion de memoria en la cual se contiene los valores a donde saltar.
 
 	uint8_t primer_byte_aux = (p_mos->mem)[(redir)]; // primer byte
-	uint8_t segundo_byte_aux = (p_mos->mem)[(p_mos->pc) + 1]; //segundo byte
+	uint8_t segundo_byte_aux = (p_mos->mem)[(p_mos->pc) + 1]; //se gundo byte
 
 	uint16_t redir_aux = (segundo_byte_aux << 8) | primer_byte_aux; // este valor es el valor al cual el JMP va
 

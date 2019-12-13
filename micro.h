@@ -13,23 +13,21 @@ typedef struct {
     uint8_t *m;         // Puntero al operando (registro o memoria).
     uint16_t direccion; // Dirección del operando (si corresponde).
 } instruccion_t;
-
 struct mos6502 {
     uint8_t a, x, y;    // Registros A, X e Y.
     uint16_t pc;        // Program counter.
     uint8_t status;     // Registro de status.
     uint8_t sp;         // Stack pointer.
     uint8_t *mem;       // Memoria.
-
     instruccion_t * inst; // puntero a la estructura de instruccion (actual)
-
     long ciclos;        // Cantidad de ciclos totales de ejecución.
 };*/
 
 
 mos6502_t * micro_crear();
 void micro_destruir(mos6502_t *);
-bool cargar_rom(mos6502_t *,char *);
+bool cargar_rom(mos6502_t *, char *);
+bool setear_log (mos6502_t *, char *);
 
 
 void ejecutar_instruccion(mos6502_t * p_mos);

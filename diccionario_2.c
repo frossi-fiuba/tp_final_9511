@@ -1,4 +1,4 @@
-#include "diccionario.h"
+#include "diccionario_2.h"
 #include "direccionamiento.h"
 #include "operaciones.h"
 
@@ -47,27 +47,27 @@ diccionario_t diccionario [256] = {
 
 	[0x1E] = {ASL, absoluta_x, 7},	
 
-	[0x90] = {BCC, relativo, 2},
+	[0x90] = {BCC, relativa, 2},
 
-	[0xB0] = {BCS relativo, 2},
+	[0xB0] = {BCS, relativa, 2},
 
-	[0xF0] = {BEQ relativo, 2},
+	[0xF0] = {BEQ, relativa, 2},
 
 	[0x24] = {BIT, pagina_cero, 3},
 
 	[0x2C] = {BIT, absoluta, 4},
 
-	[0x30] = {BMI, relativo, 2},
+	[0x30] = {BMI, relativa, 2},
 
-	[0xD0] = {BNE, relativo, 2},
+	[0xD0] = {BNE, relativa, 2},
 
-	[0x10] = {BPL, relativo, 2},
+	[0x10] = {BPL, relativa, 2},
 
 	[0x00] = {BRK, implicito, 7},
 
-	[0x50] = {BVC, relativo, 2},
+	[0x50] = {BVC, relativa, 2},
 
-	[0x70] = {BVS, relativo, 2},
+	[0x70] = {BVS, relativa, 2},
 
 	[0x18] = {CLC, implicito, 2},
 
@@ -147,7 +147,7 @@ diccionario_t diccionario [256] = {
 
 	[0x4C] = {JMP, absoluta, 3},
 
-	[0x6E] = {JMP, indirecto, 5},
+	[0x6C] = {JMP, indirecta, 5},
 
 	[0x20] = {JSR, absoluta, 7},
 
@@ -307,4 +307,5 @@ diccionario_t diccionario [256] = {
 
 	[0x98] = {TYA, implicito, 2},
 };
+
 

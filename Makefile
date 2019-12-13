@@ -1,24 +1,25 @@
-PROGRAM=main
+PROGRAM=main_2
 CC=gcc
 CDFLAGS=-Wall -std=c99 -pedantic -g
 LDFLAGS=-lm
 
 all:$(PROGRAM)
 
-$(PROGRAM): main.o status.o diccionario.o operaciones.o micro.o direccionamiento.o
-	$(CC) $(CDFLAGS) $(LDFLAGS) main.o status.o diccionario.o operaciones.o micro.o direccionamiento.o -o $(PROGRAM)
+$(PROGRAM): main_2.o status.o diccionario_2.o operaciones.o micro.o direccionamiento.o
+	$(CC) $(CDFLAGS) $(LDFLAGS) main_2.o status.o diccionario_2.o operaciones.o micro.o direccionamiento.o -o $(PROGRAM)
 
-main.o: main.c micro.h
-	$(CC) $(CFLAGS) -c main.c
+main_2.o: main_2.c micro.h
+	$(CC) $(CDFLAGS) -c main_2.c
 status.o: status.c status.h
-	$(CC) $(CFLAGS) -c status.c
-diccionario.o: diccionario.c diccionario.h operaciones.h direccionamiento.h micro.h
-	$(CC) $(CFLAGS) -c diccionario.c
+	$(CC) $(CDFLAGS) -c status.c
+diccionario_2.o: diccionario_2.c diccionario_2.h operaciones.h direccionamiento.h micro.h
+	$(CC) $(CDFLAGS) -c diccionario_2.c
 direccionamiento.o: direccionamiento.c direccionamiento.h micro.h
-	$(CC) $(CFLAGS) -c direccionamiento.c
+	$(CC) $(CDFLAGS) -c direccionamiento.c
 operaciones.o: operaciones.c operaciones.h micro.h status.h
-	$(CC) $(CFLAGS) -c operaciones.c
+	$(CC) $(CDFLAGS) -c operaciones.c
 micro.o: micro.c micro.h operaciones.h direccionamiento.h
-	$(CC) $(CFLAGS) -c micro.c
+	$(CC) $(CDFLAGS) -c micro.c
 clean:
 	rm -vf *.o $(PROGRAM)
+	
