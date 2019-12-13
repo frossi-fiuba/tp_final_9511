@@ -40,6 +40,8 @@ mos6502_t *micro_crear(){
 
     setear_log(micro ,"log_d");
 
+    micro->inst = calloc (1, sizeof(instruccion_t));
+
     return micro;
 }
 
@@ -123,8 +125,8 @@ bool addto_log (mos6502_t * p_mos, char * nombre_archivo){
     FILE * f = fopen(nombre_archivo, "a");
     if (!f)
         return false;
-    fprintf(f,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp);
-    printf("%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp);
+    fprintf(f,"%04x %02x %02x %02x %02x %02x, opcode: %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp, p_mos->inst->codigo);
+    printf("%04x %02x %02x %02x %02x %02x , opcode: %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp, p_mos->inst->codigo);
 
     fclose(f);
     return true;

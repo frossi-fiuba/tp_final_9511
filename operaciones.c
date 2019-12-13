@@ -95,7 +95,7 @@ void BMI (mos6502_t *p_mos){
 }
 
 void BNE (mos6502_t *p_mos){
-	if (get_status(&(p_mos->status), ZERO))
+	if (!get_status(&(p_mos->status), ZERO))
 		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
@@ -158,7 +158,7 @@ void CLV(mos6502_t *p_mos){
 
 void CP(mos6502_t *p_mos, uint8_t registro){
 
-	set_status(&(p_mos->status), CARRY, *(p_mos->inst->m) <= registro);
+	set_status(&(p_mos->status), CARRY, registro >= *(p_mos->inst->m));
 	set_status(&(p_mos->status), ZERO, *(p_mos->inst->m) == registro);
 	set_status(&(p_mos->status), NEGATIVE, *(p_mos->inst->m) > registro);
 }
