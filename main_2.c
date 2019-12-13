@@ -8,7 +8,7 @@ int main(int argc, char *argv[]){
 
     long ciclos_max = 83007452;
 
-    if(argc > 6) return 1; //Chequear que la condición esté bien.
+    if(argc > 6 || argc < 2) return 1; //Chequear que la condición esté bien.
     
     mos6502_t * micro = micro_crear(); // aca va puntero y crear micro
     if(!micro) return 1;
@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
         }
     }
 
-    if(!cargar_rom(micro, argv[2])) return 1;
+    if(!cargar_rom(micro, argv[1])) return 1;
     ejecutar_instruccion(micro);
 
     micro_destruir(micro);
