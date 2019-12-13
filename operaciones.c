@@ -32,14 +32,14 @@ static void TRANSFER(mos6502_t *p_mos, uint8_t from, uint8_t *to);
 
 void ADC(mos6502_t *p_mos){
 
-	uint16_t aux = 0;
-
-	aux = (p_mos->a) + ( ( (p_mos->status) & CARRY) + * (p_mos->inst->m) ) ;
+	uint16_t aux = (p_mos->a) + ( ( (p_mos->status) & CARRY);
+	set_overflow(&(p_mos->status), (p_mos->a), (p_mos->status) & CARRY, aux);
+	uint16_t aux2 = aux + *(p_mos->inst->m);
+	set_overflow(&(p_mos->status), aux, *(p_mos->inst->m), aux2); 
 
 	set_carry (&(p_mos->status), aux);
 	set_zero (&(p_mos->status), aux);
 	set_negative (&(p_mos->status), aux);
-	//set_overflow(&(p_mos->status), ) // NI IDEA comos setearlo llamarla 2 veces?
 
 	(p_mos->a) = aux;
 }
@@ -95,7 +95,7 @@ void BMI (mos6502_t *p_mos){
 }
 
 void BNE (mos6502_t *p_mos){
-	if (get_status(&(p_mos->status), NEGATIVE))
+	if (get_status(&(p_mos->status), ZERO))
 		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
