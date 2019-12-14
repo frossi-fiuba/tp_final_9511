@@ -288,7 +288,8 @@ void PHP (mos6502_t *p_mos){
 }
 
 void PLA (mos6502_t *p_mos){
-	p_mos->a = p_mos->mem[0x0100|p_mos->sp++];
+	p_mos->sp++;
+	p_mos->a = p_mos->mem[0x0100|p_mos->sp];
 
 	set_zero (&(p_mos->status), p_mos->a);
 	set_negative (&(p_mos->status), p_mos->a);
@@ -376,7 +377,6 @@ void TRANSFER(mos6502_t *p_mos, uint8_t from, uint8_t *to){
 
 	set_zero (&(p_mos->status), *to);
 	set_negative (&(p_mos->status), *to);
-	set_carry (&(p_mos->status), *to);
 }
 
 void TAX(mos6502_t *p_mos){
