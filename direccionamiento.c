@@ -33,22 +33,19 @@ void acumulador (mos6502_t * p_mos){
 	(p_mos->inst->m) = &(p_mos->a);
 
 }
+
 void inmediata (mos6502_t * p_mos){
 
-	(p_mos->inst->m) = &((p_mos->mem)[p_mos->pc]);
-
-	(p_mos -> pc) += 1;
+	(p_mos->inst->m) = &((p_mos->mem)[p_mos->pc++]);
 }
+
 void absoluta (mos6502_t * p_mos){
 	absoluta_all(p_mos, 0);
 }
 
 void relativa (mos6502_t *p_mos){
 
-	(p_mos->inst->m) = &((p_mos->mem)[p_mos->pc]);
-	
-	(p_mos -> pc) += 1; // deberia incrementarlo a esto se le sumaria el dato anterior. m
-
+	(p_mos->inst->m) = &((p_mos->mem)[p_mos->pc++]);
 }
 
 void pagina_cero (mos6502_t *p_mos){
@@ -57,19 +54,12 @@ void pagina_cero (mos6502_t *p_mos){
 
 void indirecta (mos6502_t *p_mos){
 
-	uint8_t primer_byte  = (p_mos->mem)[(p_mos->pc)];  //primer bytee de la direecion a buscar el dato
-	uint8_t segundo_byte = (p_mos->mem)[(p_mos->pc) + 1]; //segundo bytee de la direccion a buscar el dato
+	uint16_t primer_byte  = (p_mos->mem)[p_mos->pc++];  //primer byte de la direccion a buscar el dato
 
-	uint16_t redir = (segundo_byte << 8) | primer_byte; // se obtuvo el valor de la direccion de memoria en la cual se contiene los valores a donde saltar.
+	uint16_t redir = ((p_mos->mem)[p_mos->pc++] << 8) | primer_byte; // se obtuvo el valor de la direccion de memoria en la cual se contiene los valores a donde saltar.
 
-	uint8_t primer_byte_aux = (p_mos->mem)[(redir)]; // primer byte
-	uint8_t segundo_byte_aux = (p_mos->mem)[(p_mos->pc) + 1]; //se gundo byte
-
-	uint16_t redir_aux = (segundo_byte_aux << 8) | primer_byte_aux; // este valor es el valor al cual el JMP va
-
-	(p_mos->inst->direccion) = redir_aux;
-	
-	(p_mos -> pc) += 2;
+	p_mos->inst->direccion = (((p_mos->mem)[redir + 1]) << 8) | (p_mos->mem)[redir];
+	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
 }
 
 void absoluta_x (mos6502_t *p_mos){
@@ -89,9 +79,12 @@ void pagina_cero_y (mos6502_t *p_mos){
 }
 
 void index_indirecta_x (mos6502_t *p_mos){
-
+	uint16_t redir = ((p_mos->mem[p_mos->pc++] + p_mos->x) & 0x011);
+	p_mos->inst->direccion = p_mos->mem[redir] | (p_mos->mem[redir + 1] << 8);
+	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
+	/*
 	uint16_t redir = 0;
-	uint8_t aux =(p_mos->mem)[(p_mos->pc)] + p_mos->x;
+	uint8_t aux =(p_mos->mem)[(p_mos->pc++)] + p_mos->x;
 	redir |= aux; //0x0000 | 0xAA = 0x00AA quizas simplemente igualarlo funcione
 
 	uint8_t primer_byte_aux = (p_mos->mem)[(redir)]; // primer byte
@@ -99,14 +92,15 @@ void index_indirecta_x (mos6502_t *p_mos){
 
 	uint16_t redir_aux = (segundo_byte_aux << 8) | primer_byte_aux;
 
-	(p_mos->inst->m) = &((p_mos->mem)[redir_aux]); 
-
-	(p_mos-> pc) += 1;
-
+	(p_mos->inst->m) = &((p_mos->mem)[redir_aux]); */
 }
 
 void indirecta_index_y (mos6502_t *p_mos){
 
+	uint16_t redir = ((p_mos->mem[p_mos->pc++] + p_mos->y) & 0x011);
+	p_mos->inst->direccion = p_mos->mem[redir] | (p_mos->mem[redir + 1] << 8);
+	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
+	/*
 	uint8_t aux = (p_mos->mem)[p_mos->pc];
 
 	uint8_t primer_byte = (p_mos->mem)[(aux)]; // primer byte
@@ -116,34 +110,37 @@ void indirecta_index_y (mos6502_t *p_mos){
 
 	p_mos->inst->m = &((p_mos->mem)[redir]);
 
-	(p_mos-> pc) += 1;
+	p_mos-> pc++; */
 
 }
 
 
 void absoluta_all (mos6502_t *p_mos, uint8_t add){
 	//(p_mos->inst->direccion) = el numero contenido por la direccion de memoria expicitada en los 2 bytes siguientes a la instruccion
-	uint8_t primer_byte  = (p_mos->mem)[(p_mos->pc)];  //primer bytee
-	uint8_t segundo_byte = (p_mos->mem)[(p_mos->pc) + 1]; //segundo bytee
+	uint8_t primer_byte  = (p_mos->mem)[(p_mos->pc++)];  //primer bytee C
+	uint8_t segundo_byte = (p_mos->mem)[(p_mos->pc++)]; //segundo bytee C
 
 	uint16_t redir = ((segundo_byte << 8) | primer_byte) + add; // que pasa si hay carry? deberia hacer en 32 bits y check?
 
 	(p_mos->inst->direccion) = redir;
 	(p_mos->inst->m) = &((p_mos->mem)[redir]);
 	
-	(p_mos -> pc) += 2;
+	//(p_mos -> pc) += 2;
 }
 
 void pagina_cero_all (mos6502_t *p_mos, uint8_t add){
 
+	p_mos->inst->direccion = p_mos->mem[p_mos->pc++] & add;
+	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
+	/*
 	uint16_t redir = 0;
-	uint8_t aux =(p_mos->mem)[(p_mos->pc)] + add;
+	uint8_t aux =(p_mos->mem)[(p_mos->pc)] + add; 
 	redir |= aux; //0x0000 | 0xAA = 0x00AA quizas simplemente igualarlo funcione
 
 	(p_mos->inst->direccion) = redir; // al final esta no creo ver DEC y CMP
 	(p_mos->inst->m) = &((p_mos->mem)[redir]); // cual de las dos? 
 
-	(p_mos-> pc) += 1;
+	p_mos-> pc++; */
 }
 
 

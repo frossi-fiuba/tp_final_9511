@@ -42,6 +42,7 @@ mos6502_t *micro_crear(){
 
     micro->inst = calloc (1, sizeof(instruccion_t));
     micro->sp = 0xff;
+    micro->pc = 0x0400;
     return micro;
 }
 
