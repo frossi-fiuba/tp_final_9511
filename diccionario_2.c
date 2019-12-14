@@ -280,7 +280,7 @@ diccionario_t diccionario [256] = {
 
 	[0x81] = {STA, index_indirecta_x, 6},
 
-	[0x91] = {STA, indirecta_index_y, 6}, //ojo sera 5?
+	[0x91] = {STA, indirecta_index_y, 6}, 
 
 	[0x86] = {STX, pagina_cero, 3},
 
@@ -290,7 +290,7 @@ diccionario_t diccionario [256] = {
 
 	[0x84] = {STY, pagina_cero, 3},
 
-	[0x94] = {STY, pagina_cero_y, 4}, // ojo que en ambos es y
+	[0x94] = {STY, pagina_cero_y, 4}, 
 
 	[0x8C] = {STY, absoluta, 4},
 

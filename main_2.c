@@ -20,7 +20,7 @@ int main(int argc, char *argv[]){
 
     if(!micro) 
         return 1;
-
+    
     for(size_t i = 2; i < argc; i += 2){
         if(!strcmp(argv[i], "-log")){
             if(!setear_log(micro ,argv[i+1])){
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
         micro_destruir(micro);
         return 1;
     }
-
+    
     while (get_ciclos(micro) < ciclos_max || get_ciclos(micro) != halt){ // pc o puede ser inst->codigo?
 
         ejecutar_instruccion(micro);

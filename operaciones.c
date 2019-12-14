@@ -242,7 +242,7 @@ void JMP (mos6502_t *p_mos){
 
 void JSR (mos6502_t *p_mos){
 
-	p_mos->mem[0x0100|p_mos->sp] = p_mos->pc >> 8;
+	p_mos->mem[0x0100|p_mos->sp] = (p_mos->pc - 1) >> 8;
 	p_mos->sp--;
 	p_mos->mem[0x0100|p_mos->sp] = p_mos->pc -1;
 	p_mos->sp--;
@@ -280,7 +280,7 @@ void LDY (mos6502_t *p_mos){
 }
 
 void LSR (mos6502_t *p_mos){
-	set_status(&(p_mos->status), CARRY, *(p_mos->inst->m) & 0x1);
+	set_status(&(p_mos->status), CARRY, *(p_mos->inst->m) & MASK_LSB);
 	*(p_mos->inst->m) >>= 1;
 
 	//set_carry (&(p_mos->status), *(p_mos->inst->m));
@@ -300,30 +300,29 @@ void ORA (mos6502_t *p_mos){
 
 void PHA (mos6502_t *p_mos){
 	
-	p_mos->mem[0x0100|p_mos->sp] = p_mos->a;
+	p_mos->mem[0x0100 | p_mos->sp] = p_mos->a;
 	p_mos->sp--;
 }
 
 void PHP (mos6502_t *p_mos){
 	
-	p_mos->mem[0x0100|p_mos->sp] = p_mos->status | (1<<4) | (1<<5);
+	p_mos->mem[0x0100 | p_mos->sp] = p_mos->status | (1<<4) | (1<<5);
 	p_mos->sp--;
 
 }
 
 void PLA (mos6502_t *p_mos){
 	p_mos->sp++;
-	p_mos->a = p_mos->mem[0x0100|p_mos->sp];
+	p_mos->a = p_mos->mem[0x0100 | p_mos->sp];
 
 	set_zero (&(p_mos->status), p_mos->a);
 	set_negative (&(p_mos->status), p_mos->a);
 }
 
 void PLP (mos6502_t *p_mos){
-	//p_mos->status = p_mos->mem[p_mos->sp];
+	
 	p_mos->sp++;
-	uint8_t aux = p_mos->status & 0x30;
-	p_mos->status = (p_mos->mem[0x0100|p_mos->sp] & 0xCF) | aux ; // tmb puede ser con los flags & BREAK & reservado
+	p_mos->status = (p_mos->mem[0x0100 | p_mos->sp] & 0xCF) | (p_mos->status & 0x30); // tmb puede ser con los flags & BREAK & reservado
 }
 
 void ROL (mos6502_t *p_mos){
@@ -346,9 +345,9 @@ void RTI (mos6502_t *p_mos){
 	PLP(p_mos);
 
 	p_mos->sp++;
-	uint8_t primer_byte  = (p_mos->mem)[0x0100|p_mos->sp]; //primer byte
+	uint8_t primer_byte  = (p_mos->mem)[0x0100 | p_mos->sp]; //primer byte
 	p_mos->sp++;  
-	uint8_t segundo_byte = (p_mos->mem)[0x0100|p_mos->sp];  //segundo byte
+	uint8_t segundo_byte = (p_mos->mem)[0x0100 | p_mos->sp];  //segundo byte
 
 	p_mos->pc = ((segundo_byte << 8) | primer_byte);
 	
@@ -357,18 +356,18 @@ void RTI (mos6502_t *p_mos){
 void RTS (mos6502_t *p_mos){
 
 	p_mos->sp++;
-	uint8_t primer_byte  = (p_mos->mem)[0x0100|p_mos->sp];  //primer byte
+	uint8_t primer_byte  = (p_mos->mem)[0x0100 | p_mos->sp];  //primer byte
 	p_mos->sp++;
-	uint8_t segundo_byte = (p_mos->mem)[0x0100|p_mos->sp];  //segundo byte
+	uint8_t segundo_byte = (p_mos->mem)[0x0100 | p_mos->sp];  //segundo byte
 	
 	p_mos->pc = ((segundo_byte << 8) | primer_byte) + 1;
 }
 
 void SBC (mos6502_t *p_mos){
 	uint16_t aux = p_mos->a + *(p_mos->inst->m);
-	set_overflow(&(p_mos->status), p_mos->a, *(p_mos->inst->m), aux);
+	//set_overflow(&(p_mos->status), p_mos->a, *(p_mos->inst->m), aux);
 	uint16_t aux2 = aux - (!get_status((&p_mos->status),CARRY));
-	set_overflow(&(p_mos->status), aux, -(!get_status((&p_mos->status),CARRY)), aux);
+	//set_overflow(&(p_mos->status), aux, -(!get_status((&p_mos->status),CARRY)), aux);
 	set_carry (&(p_mos->status), ~p_mos->a);
 
 	p_mos->a = aux2;

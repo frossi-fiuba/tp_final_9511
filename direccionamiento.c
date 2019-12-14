@@ -2,6 +2,7 @@
 #include "direccionamiento.h"
 
 #include <stdint.h>
+#include <stdio.h>
 
 typedef struct {
     uint8_t codigo;     // Opcode.
@@ -26,6 +27,8 @@ static void absoluta_all (mos6502_t *p_mos, uint8_t add);
 static void pagina_cero_all (mos6502_t *p_mos, uint8_t add);
 
 void implicito (mos6502_t * p_mos){
+
+	p_mos->inst->m = NULL;
 }
 
 void acumulador (mos6502_t * p_mos){
@@ -35,7 +38,7 @@ void acumulador (mos6502_t * p_mos){
 }
 
 void inmediata (mos6502_t * p_mos){
-
+	
 	(p_mos->inst->m) = &((p_mos->mem)[p_mos->pc++]);
 }
 
@@ -54,10 +57,10 @@ void pagina_cero (mos6502_t *p_mos){
 
 void indirecta (mos6502_t *p_mos){
 
-	uint8_t primer_byte  = (p_mos->mem)[p_mos->pc++];  //primer byte de la direccion a buscar el dato
-
-	uint16_t redir = ((p_mos->mem)[p_mos->pc++] << 8) | primer_byte; // se obtuvo el valor de la direccion de memoria en la cual se contiene los valores a donde saltar.
-
+	uint8_t primer_byte  = (p_mos->mem)[p_mos->pc];  //primer byte de la direccion a buscar el dato
+	p_mos->pc++;
+	uint16_t redir = ((p_mos->mem)[p_mos->pc] << 8) | primer_byte; // se obtuvo el valor de la direccion de memoria en la cual se contiene los valores a donde saltar.
+	p_mos->pc++;
 	p_mos->inst->direccion = (((p_mos->mem)[redir + 1]) << 8) | (p_mos->mem)[redir];
 	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
 }
@@ -79,7 +82,9 @@ void pagina_cero_y (mos6502_t *p_mos){
 }
 
 void index_indirecta_x (mos6502_t *p_mos){
-	uint16_t redir = ((p_mos->mem[p_mos->pc++] + p_mos->x) & 0x011);
+
+	uint16_t redir = (p_mos->mem[p_mos->pc] + p_mos->x);// & 0x011;
+	p_mos->pc++;
 	p_mos->inst->direccion = p_mos->mem[redir] | (p_mos->mem[redir + 1] << 8);
 	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
 	/*
@@ -97,8 +102,9 @@ void index_indirecta_x (mos6502_t *p_mos){
 
 void indirecta_index_y (mos6502_t *p_mos){
 
-	uint16_t redir = ((p_mos->mem[p_mos->pc++] + p_mos->y) & 0x011);
-	p_mos->inst->direccion = p_mos->mem[redir] | (p_mos->mem[redir + 1] << 8);
+	uint16_t redir = (p_mos->mem[p_mos->pc] + p_mos->y) & 0x011;
+	p_mos->pc++;
+	p_mos->inst->direccion = (p_mos->mem[redir] | (p_mos->mem[redir + 1] << 8));
 	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
 	/*
 	uint8_t aux = (p_mos->mem)[p_mos->pc];
@@ -117,22 +123,24 @@ void indirecta_index_y (mos6502_t *p_mos){
 
 void absoluta_all (mos6502_t *p_mos, uint8_t add){
 	//(p_mos->inst->direccion) = el numero contenido por la direccion de memoria expicitada en los 2 bytes siguientes a la instruccion
-	uint8_t primer_byte  = (p_mos->mem)[(p_mos->pc++)];  //primer bytee C
-	uint8_t segundo_byte = (p_mos->mem)[(p_mos->pc++)]; //segundo bytee C
-
-	uint16_t redir = ((segundo_byte << 8) | primer_byte) + add; // que pasa si hay carry? deberia hacer en 32 bits y check?
-
-	(p_mos->inst->direccion) = redir;
-	(p_mos->inst->m) = &((p_mos->mem)[redir]);
+	
+	uint8_t primer_byte  = (p_mos->mem)[p_mos->pc]; 
+	p_mos->pc++;
+	(p_mos->inst->direccion) = (((p_mos->mem)[p_mos->pc++] << 8) | primer_byte) + add;
+	(p_mos->inst->m) = &((p_mos->mem)[p_mos->inst->direccion]);
 	
 	//(p_mos -> pc) += 2;
 }
 
 void pagina_cero_all (mos6502_t *p_mos, uint8_t add){
-
-	p_mos->inst->direccion = 0 | (p_mos->mem[p_mos->pc++] + add); // p_mos->inst->direccion = (p_mos->mem[p_mos->pc++] & add);
+	
+	p_mos->inst->direccion = 0x00FF & (p_mos->mem[p_mos->pc] + add); // p_mos->inst->direccion = (p_mos->mem[p_mos->pc++] & add);
+	p_mos->pc++;
 	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
 	/*
+	p_mos->inst->direccion = 0 | (p_mos->mem[p_mos->pc++] + add); // p_mos->inst->direccion = (p_mos->mem[p_mos->pc++] & add);
+	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
+	/ *
 	uint16_t redir = 0;
 	uint8_t aux =(p_mos->mem)[(p_mos->pc)] + add; 
 	redir |= aux; //0x0000 | 0xAA = 0x00AA quizas simplemente igualarlo funcione
