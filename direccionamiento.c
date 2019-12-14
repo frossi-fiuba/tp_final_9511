@@ -130,7 +130,7 @@ void absoluta_all (mos6502_t *p_mos, uint8_t add){
 
 void pagina_cero_all (mos6502_t *p_mos, uint8_t add){
 
-	p_mos->inst->direccion = p_mos->mem[p_mos->pc++] & add;
+	p_mos->inst->direccion = 0 | (p_mos->mem[p_mos->pc++] + add); // p_mos->inst->direccion = (p_mos->mem[p_mos->pc++] & add);
 	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
 	/*
 	uint16_t redir = 0;
