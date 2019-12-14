@@ -54,7 +54,7 @@ void pagina_cero (mos6502_t *p_mos){
 
 void indirecta (mos6502_t *p_mos){
 
-	uint16_t primer_byte  = (p_mos->mem)[p_mos->pc++];  //primer byte de la direccion a buscar el dato
+	uint8_t primer_byte  = (p_mos->mem)[p_mos->pc++];  //primer byte de la direccion a buscar el dato
 
 	uint16_t redir = ((p_mos->mem)[p_mos->pc++] << 8) | primer_byte; // se obtuvo el valor de la direccion de memoria en la cual se contiene los valores a donde saltar.
 
