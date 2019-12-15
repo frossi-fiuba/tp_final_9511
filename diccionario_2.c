@@ -184,7 +184,7 @@ diccionario_t diccionario [256] = {
 
 	[0xAC] = {LDY, absoluta, 4},
 
-	[0xBC] = {LDY, absoluta_y, 4},
+	[0xBC] = {LDY, absoluta_x, 4},
 
 	[0x4A] = {LSR, acumulador, 2},
 
