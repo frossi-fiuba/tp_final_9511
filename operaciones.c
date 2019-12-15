@@ -86,7 +86,8 @@ void BEQ(mos6502_t *p_mos){
 void BIT(mos6502_t *p_mos){
 
 	set_zero(&(p_mos->status), p_mos->a & *(p_mos->inst->m));
-	p_mos->status |= (OVERFLOW|NEGATIVE) & *(p_mos->inst->m);
+	set_status(&(p_mos->status), OVERFLOW, OVERFLOW & *(p_mos->inst->m));
+	set_status(&(p_mos->status), NEGATIVE, NEGATIVE & *(p_mos->inst->m));
 }
 
 void BMI(mos6502_t *p_mos){
