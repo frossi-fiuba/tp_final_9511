@@ -358,8 +358,8 @@ void PLA(mos6502_t *p_mos){
 void PLP(mos6502_t *p_mos){
 	
 	p_mos->sp++;
-	p_mos->status = (p_mos->mem[0x0100 | p_mos->sp]) | (p_mos->status & 0x30); // tmb puede ser con los flags & BREAK & reservado
-	//p_mos->status = (p_mos->mem[0x0100 | p_mos->sp] & 0xCF) | (p_mos->status & 0x30); // tmb puede ser con los flags & BREAK & reservado
+	p_mos->status = (p_mos->mem[0x0100 | p_mos->sp] & 0xCF) | (p_mos->status & 0x30); // tmb puede ser con los flags & BREAK & reservado
+	//p_mos->status = (p_mos->mem[0x0100 | p_mos->sp]) | (p_mos->status & 0x30); // tmb puede ser con los flags & BREAK & reservado
 }
 
 void ROL(mos6502_t *p_mos){
