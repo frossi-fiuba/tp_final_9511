@@ -226,21 +226,21 @@ diccionario_t diccionario [256] = {
 
 	[0x26] = {ROL, pagina_cero, 3},
 
-	[0x36] = {ROL, pagina_cero_x, 4},
+	[0x36] = {ROL, pagina_cero_x, 6}, //4
 
 	[0x2E] = {ROL, absoluta, 4},
 
-	[0x3E] = {ROL, absoluta_x, 4},
+	[0x3E] = {ROL, absoluta_x, 7}, //4
 
 	[0x6A] = {ROR, acumulador, 2},
 
 	[0x66] = {ROR, pagina_cero, 3},
 
-	[0x76] = {ROR, pagina_cero_x, 4},
+	[0x76] = {ROR, pagina_cero_x, 6}, //4
 
-	[0x6E] = {ROR, absoluta, 4},
+	[0x6E] = {ROR, absoluta, 6}, //4
 
-	[0x7E] = {ROR, absoluta_x, 4},
+	[0x7E] = {ROR, absoluta_x, 7}, //4
 
 	[0x40] = {RTI, implicito, 6},
 
