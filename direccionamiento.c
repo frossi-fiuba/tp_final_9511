@@ -84,7 +84,7 @@ void pagina_cero_y (mos6502_t *p_mos){
 
 void index_indirecta_x (mos6502_t *p_mos){
 
-	uint16_t redir = (p_mos->mem[p_mos->pc] + p_mos->x);// & 0x011;
+	uint8_t redir = (p_mos->mem[p_mos->pc] + p_mos->x);
 	p_mos->pc++;
 	p_mos->inst->direccion = p_mos->mem[redir] | (p_mos->mem[redir + 1] << 8);
 	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
@@ -103,7 +103,7 @@ void index_indirecta_x (mos6502_t *p_mos){
 
 void indirecta_index_y (mos6502_t *p_mos){
 
-	uint16_t redir = p_mos->mem[p_mos->pc];
+	uint8_t redir = p_mos->mem[p_mos->pc];
 	p_mos->pc++;
 	p_mos->inst->direccion = (p_mos->mem[redir] | (p_mos->mem[redir + 1] << 8)) + p_mos->y;
 	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
