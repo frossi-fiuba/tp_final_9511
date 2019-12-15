@@ -21,6 +21,7 @@ struct mos6502 {
 
     instruccion_t * inst; // puntero a la estructura de instruccion (actual)
 
+    char *log;  // locacion absoluta del archivo log donde grabar
     long ciclos;        // Cantidad de ciclos totales de ejecución.
 };
 

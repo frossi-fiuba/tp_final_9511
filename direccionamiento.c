@@ -19,6 +19,7 @@ struct mos6502 {
     uint8_t *mem;       // Memoria.
 
     instruccion_t * inst; // puntero a la estructura de instruccion (actual)
+    char *log;  // locacion absoluta del archivo log donde grabar
 
     long ciclos;        // Cantidad de ciclos totales de ejecución.
 };
@@ -134,8 +135,8 @@ void absoluta_all (mos6502_t *p_mos, uint8_t add){
 
 void pagina_cero_all (mos6502_t *p_mos, uint8_t add){
 	
-	p_mos->inst->direccion = 0x00FF & (p_mos->mem[p_mos->pc] + add); // p_mos->inst->direccion = (p_mos->mem[p_mos->pc++] & add);
-	p_mos->pc++;
+	uint8_t aux = p_mos->mem[p_mos->pc++] + add;
+	p_mos->inst->direccion =  0x00FF & aux; // p_mos->inst->direccion = (p_mos->mem[p_mos->pc++] & add);	
 	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
 	/*
 	p_mos->inst->direccion = 0 | (p_mos->mem[p_mos->pc++] + add); // p_mos->inst->direccion = (p_mos->mem[p_mos->pc++] & add);

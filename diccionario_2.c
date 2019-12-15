@@ -290,7 +290,7 @@ diccionario_t diccionario [256] = {
 
 	[0x84] = {STY, pagina_cero, 3},
 
-	[0x94] = {STY, pagina_cero_y, 4}, 
+	[0x94] = {STY, pagina_cero_x, 4}, 
 
 	[0x8C] = {STY, absoluta, 4},
 
