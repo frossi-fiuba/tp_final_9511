@@ -103,8 +103,7 @@ void index_indirecta_x (mos6502_t *p_mos){
 
 void indirecta_index_y (mos6502_t *p_mos){
 
-	uint8_t redir = p_mos->mem[p_mos->pc];
-	p_mos->pc++;
+	uint8_t redir = p_mos->mem[p_mos->pc++];
 	p_mos->inst->direccion = (p_mos->mem[redir] | (p_mos->mem[redir + 1] << 8)) + p_mos->y;
 	p_mos->inst->m = &(p_mos->mem[p_mos->inst->direccion]);
 	/*
