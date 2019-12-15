@@ -180,7 +180,7 @@ diccionario_t diccionario [256] = {
 
 	[0xA4] = {LDY, pagina_cero, 3},
 
-	[0xB4] = {LDY, pagina_cero_y, 4},
+	[0xB4] = {LDY, pagina_cero_x, 4},
 
 	[0xAC] = {LDY, absoluta, 4},
 

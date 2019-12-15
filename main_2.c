@@ -10,7 +10,7 @@ int main(int argc, char *argv[]){
     uint8_t halt;
     char * halt_aux;
 
-    if(argc > 6) 
+    if(argc > 8) 
       return 1; //Chequear que la condición esté bien.
     
     if(argc % 2)

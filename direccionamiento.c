@@ -39,7 +39,7 @@ void acumulador (mos6502_t * p_mos){
 
 void inmediata (mos6502_t * p_mos){
 	
-	(p_mos->inst->m) = &((p_mos->mem)[p_mos->pc++]);
+	(p_mos->inst->m) = &((p_mos->mem)[(p_mos->pc++)]);
 }
 
 void absoluta (mos6502_t * p_mos){

@@ -44,44 +44,45 @@ void ADC(mos6502_t *p_mos){
 	p_mos->a = aux2;
 }
 
-void AND (mos6502_t *p_mos){
+void AND(mos6502_t *p_mos){
 
-	
-	(p_mos->a) &=  * (p_mos->inst->m);
+	(p_mos->a) &=  *(p_mos->inst->m);
 
-	set_zero (&(p_mos->status), p_mos->a);
-	set_negative (&(p_mos->status), p_mos->a);
+	set_zero(&(p_mos->status), p_mos->a);
+	set_negative(&(p_mos->status), p_mos->a);
 
 }
 
 void ASL(mos6502_t *p_mos){
 
-	
-	set_status (&(p_mos -> status), CARRY, MASK_MSB & *(p_mos->inst->m));
+	set_status (&(p_mos->status), CARRY, MASK_MSB & *(p_mos->inst->m));
 
-	(* (p_mos->inst->m)) <<= 1; 
+	(*(p_mos->inst->m)) <<= 1; 
 	
-	set_zero (&(p_mos -> status), * (p_mos->inst->m));
-	set_negative (&(p_mos -> status), * (p_mos->inst->m));
+	set_zero (&(p_mos->status), *(p_mos->inst->m));
+	set_negative(&(p_mos -> status), *(p_mos->inst->m));
 }
 
-void BCC (mos6502_t *p_mos){
+void BCC(mos6502_t *p_mos){
+
 	if (!get_status(&(p_mos->status), CARRY))
 		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
-void BCS (mos6502_t *p_mos){
+void BCS(mos6502_t *p_mos){
+
 	if (get_status(&(p_mos->status), CARRY))
 		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
 
-void BEQ (mos6502_t *p_mos){
+void BEQ(mos6502_t *p_mos){
+
 	if (get_status(&(p_mos->status), ZERO))
 		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
-void BIT (mos6502_t *p_mos){
+void BIT(mos6502_t *p_mos){
 
 	set_zero(&(p_mos->status), p_mos->a & *(p_mos->inst->m));
 	set_negative(&(p_mos->status), p_mos->a & *(p_mos->inst->m));
@@ -94,33 +95,46 @@ void BIT (mos6502_t *p_mos){
 	p_mos->status |= ((OVERFLOW | NEGATIVE) & res);*/
 }
 
-void BMI (mos6502_t *p_mos){
+void BMI(mos6502_t *p_mos){
+
 	if (get_status(&(p_mos->status), NEGATIVE))
 		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
-void BNE (mos6502_t *p_mos){
+void BNE(mos6502_t *p_mos){
+
 	if (!get_status(&(p_mos->status), ZERO))
 		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
-void BPL (mos6502_t *p_mos){
+void BPL(mos6502_t *p_mos){
+
 	if (!get_status(&(p_mos->status), NEGATIVE))
 		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
-void BRK (mos6502_t *p_mos){
+void BRK(mos6502_t *p_mos){
 
+	uint16_t aux = p_mos->pc + 1;
+	p_mos->mem[0x100|p_mos->sp] = (aux & 0xFF00) >> 8;
+	p_mos->sp--;
+	p_mos->mem[0x100|p_mos->sp] = aux & 0x00FF;
+	p_mos->sp--;
+	p_mos->mem[0x100|p_mos->sp] = p_mos->status | (1<<4) | (1<<5);
+	p_mos->sp--;
+	p_mos->pc = (p_mos->mem[0xFFFF] << 8) | p_mos->mem[0xFFFE];
+	set_status(&(p_mos->status), INTERRUPT_DISABLE, 1);
+	/*
 	p_mos->mem[0x100|p_mos->sp] = p_mos->pc >> 8;
 	p_mos->sp--;
-	p_mos->mem[0x100|p_mos->sp] = p_mos->pc + 1;
+	p_mos->mem[0x100|p_mos->sp] = p_mos->pc;
 	p_mos->sp--;
 	p_mos->mem[0x100|p_mos->sp] = p_mos->status | (1<<4) | (1<<5);
 	p_mos->sp--;
 	p_mos->pc = (p_mos->mem[0xFFFF] << 8) | p_mos->mem[0xFFFE];
 	set_status(&(p_mos->status), INTERRUPT_DISABLE, 1);
 
-	/*
+	/ *
 	uint8_t pc_lsbyte = (p_mos->pc + 1) & 0x00FF;
 	uint8_t pc_msbyte = (p_mos->pc + 1) & 0xFF00;
 
@@ -141,34 +155,36 @@ void BRK (mos6502_t *p_mos){
 	
 }
 
-void BVC (mos6502_t *p_mos){
+void BVC(mos6502_t *p_mos){
+
 	if (!get_status(&(p_mos->status), OVERFLOW))
 		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
-void BVS (mos6502_t *p_mos){
+void BVS(mos6502_t *p_mos){
+
 	if (get_status(&(p_mos->status), OVERFLOW))
 		p_mos->pc += (int8_t) (*(p_mos->inst->m));
 }
 
 void CLC(mos6502_t *p_mos){
 
-	set_status(&(p_mos -> status), CARRY, 0);
+	set_status(&(p_mos->status), CARRY, 0);
 }
 
 void CLD(mos6502_t *p_mos){
 
-	set_status(&(p_mos -> status), DECIMAL, 0);
+	set_status(&(p_mos->status), DECIMAL, 0);
 }
 
 void CLI(mos6502_t *p_mos){
 
-	set_status(&(p_mos -> status), INTERRUPT_DISABLE, 0);
+	set_status(&(p_mos->status), INTERRUPT_DISABLE, 0);
 }
 
 void CLV(mos6502_t *p_mos){
 
-	set_status(&(p_mos -> status), OVERFLOW, 0);
+	set_status(&(p_mos->status), OVERFLOW, 0);
 }
 
 void CP(mos6502_t *p_mos, uint8_t registro){
@@ -179,18 +195,21 @@ void CP(mos6502_t *p_mos, uint8_t registro){
 }
 
 void CMP(mos6502_t *p_mos){
+
 	CP(p_mos, p_mos->a);
 }
 
 void CPX(mos6502_t *p_mos){
+
 	CP(p_mos, p_mos->x);
 }
 
 void CPY(mos6502_t *p_mos){
+
 	CP(p_mos, p_mos->y);
 }
 
-void DE (mos6502_t *p_mos, uint8_t *registro){
+void DE(mos6502_t *p_mos, uint8_t *registro){
 
 	*registro -= 1;
 	
@@ -198,49 +217,58 @@ void DE (mos6502_t *p_mos, uint8_t *registro){
 	set_negative (&(p_mos->status), *registro);
 }
 
-void DEC (mos6502_t *p_mos){
+void DEC(mos6502_t *p_mos){
+
 	DE(p_mos, p_mos->inst->m);
 }
 
-void DEX (mos6502_t *p_mos){
+void DEX(mos6502_t *p_mos){
+
 	DE(p_mos, &(p_mos->x));
 }
 
-void DEY (mos6502_t *p_mos){
+void DEY(mos6502_t *p_mos){
+
 	DE(p_mos, &(p_mos->y));
 }
 
-void EOR (mos6502_t *p_mos){
+void EOR(mos6502_t *p_mos){
 
 	p_mos->a ^= * (p_mos->inst->m);
 
-	set_zero (&(p_mos->status), p_mos->a);
-	set_negative (&(p_mos->status), p_mos->a);
+	set_zero(&(p_mos->status), p_mos->a);
+	set_negative(&(p_mos->status), p_mos->a);
 }
 
-void INC_all (mos6502_t * p_mos,uint8_t * registro){
-	(*registro)++;
+void INC_all(mos6502_t * p_mos,uint8_t * registro){
+
+	*registro += 1;
+
 	set_zero(&(p_mos->status), *registro);
 	set_negative(&(p_mos->status), *registro);
 }
 
-void INC (mos6502_t *p_mos){
+void INC(mos6502_t *p_mos){
+
 	INC_all(p_mos, p_mos->inst->m);
 }
 
-void INX (mos6502_t *p_mos){
+void INX(mos6502_t *p_mos){
+
 	INC_all(p_mos, &(p_mos->x));
 }
 
-void INY (mos6502_t *p_mos){
+void INY(mos6502_t *p_mos){
+
 	INC_all(p_mos, &(p_mos->y));
 }
 
-void JMP (mos6502_t *p_mos){
+void JMP(mos6502_t *p_mos){
+
 	p_mos->pc = p_mos->inst->direccion;
 }
 
-void JSR (mos6502_t *p_mos){
+void JSR(mos6502_t *p_mos){
 
 	p_mos->mem[0x0100|p_mos->sp] = (p_mos->pc - 1) >> 8;
 	p_mos->sp--;
@@ -257,29 +285,33 @@ void JSR (mos6502_t *p_mos){
 	p_mos->pc = *(p_mos->inst->m);*/
 }
 
-void LD (mos6502_t *p_mos, uint8_t *registro){
+void LD(mos6502_t *p_mos, uint8_t *registro){
 
 	*registro = *(p_mos->inst->m);
 
-	set_zero (&(p_mos->status), *registro);
-	set_negative (&(p_mos->status), *registro);
+	set_zero(&(p_mos->status), *registro);
+	set_negative(&(p_mos->status), *registro);
 }
 
-void LDA (mos6502_t *p_mos){
-	LD (p_mos, &(p_mos->a));
-}
+void LDA(mos6502_t *p_mos){
 
-
-void LDX (mos6502_t *p_mos){
-	LD (p_mos, &(p_mos->x));
+	LD(p_mos, &(p_mos->a));
 }
 
 
-void LDY (mos6502_t *p_mos){
-	LD (p_mos, &(p_mos->y));
+void LDX(mos6502_t *p_mos){
+
+	LD(p_mos, &(p_mos->x));
 }
 
-void LSR (mos6502_t *p_mos){
+
+void LDY(mos6502_t *p_mos){
+
+	LD(p_mos, &(p_mos->y));
+}
+
+void LSR(mos6502_t *p_mos){
+
 	set_status(&(p_mos->status), CARRY, *(p_mos->inst->m) & MASK_LSB);
 	*(p_mos->inst->m) >>= 1;
 
@@ -288,30 +320,32 @@ void LSR (mos6502_t *p_mos){
 	set_negative (&(p_mos->status), *(p_mos->inst->m));
 }
 
-void NOP (mos6502_t *p_mos){ 
+void NOP(mos6502_t *p_mos){ 
 }
 
-void ORA (mos6502_t *p_mos){
+void ORA(mos6502_t *p_mos){
+
 	p_mos->a |= *(p_mos->inst->m);
 
 	set_zero (&(p_mos->status), p_mos->a);
 	set_negative (&(p_mos->status), p_mos->a);
 }
 
-void PHA (mos6502_t *p_mos){
+void PHA(mos6502_t *p_mos){
 	
 	p_mos->mem[0x0100 | p_mos->sp] = p_mos->a;
 	p_mos->sp--;
 }
 
-void PHP (mos6502_t *p_mos){
+void PHP(mos6502_t *p_mos){
 	
 	p_mos->mem[0x0100 | p_mos->sp] = p_mos->status | (1<<4) | (1<<5);
 	p_mos->sp--;
 
 }
 
-void PLA (mos6502_t *p_mos){
+void PLA(mos6502_t *p_mos){
+
 	p_mos->sp++;
 	p_mos->a = p_mos->mem[0x0100 | p_mos->sp];
 
@@ -319,13 +353,14 @@ void PLA (mos6502_t *p_mos){
 	set_negative (&(p_mos->status), p_mos->a);
 }
 
-void PLP (mos6502_t *p_mos){
+void PLP(mos6502_t *p_mos){
 	
 	p_mos->sp++;
 	p_mos->status = (p_mos->mem[0x0100 | p_mos->sp] & 0xCF) | (p_mos->status & 0x30); // tmb puede ser con los flags & BREAK & reservado
 }
 
-void ROL (mos6502_t *p_mos){
+void ROL(mos6502_t *p_mos){
+
 	rotate_left(&(p_mos->status), p_mos->inst->m);
 
 	set_zero (&(p_mos->status), *(p_mos->inst->m));
@@ -333,7 +368,8 @@ void ROL (mos6502_t *p_mos){
 	//set_carry (&(p_mos->status), *(p_mos->inst->m));
 }
 
-void ROR (mos6502_t *p_mos){
+void ROR(mos6502_t *p_mos){
+
 	rotate_right(&(p_mos->status),p_mos->inst->m);
 
 	set_zero (&(p_mos->status), *(p_mos->inst->m));
@@ -341,7 +377,8 @@ void ROR (mos6502_t *p_mos){
 	//set_carry (&(p_mos->status), *(p_mos->inst->m));
 }
 
-void RTI (mos6502_t *p_mos){
+void RTI(mos6502_t *p_mos){
+
 	PLP(p_mos);
 
 	p_mos->sp++;
@@ -353,7 +390,7 @@ void RTI (mos6502_t *p_mos){
 	
 }
 
-void RTS (mos6502_t *p_mos){
+void RTS(mos6502_t *p_mos){
 
 	p_mos->sp++;
 	uint8_t primer_byte  = (p_mos->mem)[0x0100 | p_mos->sp];  //primer byte
@@ -363,11 +400,12 @@ void RTS (mos6502_t *p_mos){
 	p_mos->pc = ((segundo_byte << 8) | primer_byte) + 1;
 }
 
-void SBC (mos6502_t *p_mos){
+void SBC(mos6502_t *p_mos){
+
 	uint16_t aux = p_mos->a + *(p_mos->inst->m);
-	//set_overflow(&(p_mos->status), p_mos->a, *(p_mos->inst->m), aux);
+	set_overflow(&(p_mos->status), p_mos->a, *(p_mos->inst->m), aux);
 	uint16_t aux2 = aux - (!get_status((&p_mos->status),CARRY));
-	//set_overflow(&(p_mos->status), aux, -(!get_status((&p_mos->status),CARRY)), aux);
+	set_overflow(&(p_mos->status), aux, -(!get_status((&p_mos->status),CARRY)), aux);
 	set_carry (&(p_mos->status), ~p_mos->a);
 
 	p_mos->a = aux2;
@@ -377,31 +415,38 @@ void SBC (mos6502_t *p_mos){
 	
 }
 
-void SEC (mos6502_t *p_mos){ 
+void SEC(mos6502_t *p_mos){ 
+
 	set_status (&(p_mos->status), CARRY, 1);
 }
 
-void SED (mos6502_t *p_mos){ 
+void SED(mos6502_t *p_mos){
+
 	set_status (&(p_mos->status), DECIMAL, 1);
 }
 
-void SEI (mos6502_t *p_mos){ 
+void SEI(mos6502_t *p_mos){
+
 	set_status (&(p_mos->status), INTERRUPT_DISABLE, 1);
 }
 
 void STA(mos6502_t *p_mos){
+
 	*(p_mos->inst->m) = p_mos->a;
 }
 
 void STX(mos6502_t *p_mos){
+
 	*(p_mos->inst->m) = p_mos->x;
 }
 
 void STY(mos6502_t *p_mos){
+
 	*(p_mos->inst->m) = p_mos->y;
 }
 
 void TRANSFER(mos6502_t *p_mos, uint8_t from, uint8_t *to){
+
 	*to = from;
 
 	set_zero (&(p_mos->status), *to);
@@ -409,25 +454,31 @@ void TRANSFER(mos6502_t *p_mos, uint8_t from, uint8_t *to){
 }
 
 void TAX(mos6502_t *p_mos){
+
 	TRANSFER(p_mos, p_mos->a, &(p_mos->x));
 }
 
 void TAY(mos6502_t *p_mos){
+
 	TRANSFER(p_mos, p_mos->a, &(p_mos->y));
 }
 
 void TSX(mos6502_t *p_mos){
+	
 	TRANSFER(p_mos, p_mos->sp, &(p_mos->x));
 }
 
 void TXA(mos6502_t *p_mos){
+
 	TRANSFER(p_mos, p_mos->x, &(p_mos->a));
 }
 
 void TXS(mos6502_t *p_mos){
+
 	p_mos->sp = p_mos->x;
 }
 
 void TYA(mos6502_t *p_mos){
+
 	TRANSFER(p_mos, p_mos->y, &(p_mos->a));
 }
