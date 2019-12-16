@@ -54,8 +54,10 @@ int main(int argc, char *argv[]){
         return 1;
     }
     printf("esta ejecutando\n");
+    size_t i = 1;
     while (get_ciclos(micro) < ciclos_max && get_pc(micro) != halt){ // pc o puede ser inst->codigo?
-
+        printf("%zu\n",i);
+        i++;
         ejecutar_instruccion(micro);
     }
     printf("salio!\n");

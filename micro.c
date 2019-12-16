@@ -42,6 +42,10 @@ mos6502_t *micro_crear(){
     setear_log(micro ,"log_d");
 
     micro->inst = calloc (1, sizeof(instruccion_t));
+
+    if(!(micro->inst))
+        return NULL;
+
     return micro;
 }
 
@@ -101,13 +105,9 @@ void ejecutar_instruccion(mos6502_t * p_mos){
 
     p_mos->pc++;
 
-    instruccion_t instruccion;  
+    ((*(p_mos->inst)).codigo) = opcode;
 
-    (instruccion.codigo) = opcode;
-
-    (instruccion.ciclos) = diccionario[opcode].ciclos;
-
-    p_mos->inst = &instruccion;
+    ((*(p_mos->inst)).ciclos) = diccionario[opcode].ciclos;
     
     f_direccionamiento_t direccionamiento = diccionario[opcode].dir; 
 
@@ -117,7 +117,7 @@ void ejecutar_instruccion(mos6502_t * p_mos){
 
     operacion (p_mos);
 
-    (p_mos->ciclos) += (instruccion.ciclos);
+    (p_mos->ciclos) += ((*(p_mos->inst)).ciclos);
 
 }
 
@@ -148,20 +148,7 @@ bool setear_log (mos6502_t * p_mos, char * nombre_archivo){
 }
 
 
-// Testea todos los registros del microprocesador contra los valores provistos
-void assert_microprocesador(const char *test, mos6502_t *m, uint16_t pc, uint8_t a, uint8_t x, uint8_t y, uint8_t status, uint8_t ciclos_micro) {
-    
-    fprintf(stderr, "%s... ", test);
 
-    assert(m->pc == pc);
-    assert(m->a == a);
-    assert(m->x == x);
-    assert(m->y == y);
-    assert(m->status == status);
-    assert(m->ciclos == ciclos_micro);
-
-    fprintf(stderr, "OK\n");
-}
 
 // Inicializa los registros del microprocesador
 void resetear_microprocesador(mos6502_t *m, uint8_t *mem, uint16_t pc) {
