@@ -7,7 +7,7 @@ int main(int argc, char *argv[]){
 
     long ciclos_max = CICLOS_MAX;
     uint16_t halt;
-    char * halt_aux;
+    char **halt_aux=NULL;
 
     if(argc > 8) 
       return 1; //Chequear que la condición esté bien.
@@ -29,9 +29,9 @@ int main(int argc, char *argv[]){
         }
        else if(!strcmp(argv[i], "-halt")){
             printf("entro bien\n");
-            halt = strtol(argv[i+1], &halt_aux, 16);
+            halt = strtol(argv[i+1], halt_aux, 16);
             printf("leyo %04x\n", halt);
-            if(halt_aux){
+            if(halt_aux && **halt_aux != '\n'){
                 micro_destruir(micro);
                 return 1;
             }
