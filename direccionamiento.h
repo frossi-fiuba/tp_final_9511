@@ -5,16 +5,16 @@
 
 typedef void(*f_direccionamiento_t)(mos6502_t *);
 
-// no indexados, no en memoria
+// No indexados, no en memoria
 void implicito (mos6502_t *p_mos);
 void acumulador (mos6502_t *p_mos);
 void inmediata (mos6502_t *p_mos);
-// no indexados, en memoria
+// No indexados, en memoria
 void relativa (mos6502_t *p_mos);
 void absoluta (mos6502_t *p_mos);
 void pagina_cero (mos6502_t *p_mos);
 void indirecta (mos6502_t *p_mos);
-// indexadas
+// Indexados
 void absoluta_x (mos6502_t *p_mos);
 void absoluta_y (mos6502_t *p_mos);
 void pagina_cero_x (mos6502_t *p_mos);

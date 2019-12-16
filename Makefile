@@ -1,19 +1,19 @@
-PROGRAM=main_2
+PROGRAM=main
 CC=gcc
 CDFLAGS=-Wall -std=c99 -pedantic -g
 LDFLAGS=-lm
 
 all:$(PROGRAM)
 
-$(PROGRAM): main_2.o status.o diccionario_2.o operaciones.o micro.o direccionamiento.o
-	$(CC) $(CDFLAGS) $(LDFLAGS) main_2.o status.o diccionario_2.o operaciones.o micro.o direccionamiento.o -o $(PROGRAM)
+$(PROGRAM): main.o status.o diccionario.o operaciones.o micro.o direccionamiento.o
+	$(CC) $(CDFLAGS) $(LDFLAGS) main.o status.o diccionario.o operaciones.o micro.o direccionamiento.o -o $(PROGRAM)
 
-main_2.o: main_2.c micro.h
-	$(CC) $(CDFLAGS) -c main_2.c
+main.o: main.c micro.h
+	$(CC) $(CDFLAGS) -c main.c
 status.o: status.c status.h
 	$(CC) $(CDFLAGS) -c status.c
-diccionario_2.o: diccionario_2.c diccionario_2.h operaciones.h direccionamiento.h micro.h
-	$(CC) $(CDFLAGS) -c diccionario_2.c
+diccionario.o: diccionario.c diccionario.h operaciones.h direccionamiento.h micro.h
+	$(CC) $(CDFLAGS) -c diccionario.c
 direccionamiento.o: direccionamiento.c direccionamiento.h micro.h
 	$(CC) $(CDFLAGS) -c direccionamiento.c
 operaciones.o: operaciones.c operaciones.h micro.h status.h

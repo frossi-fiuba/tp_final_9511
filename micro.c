@@ -1,5 +1,5 @@
 #include "micro.h"
-#include "diccionario_2.h"
+#include "diccionario.h"
 #include "direccionamiento.h"
 #include "operaciones.h"
 
@@ -24,9 +24,9 @@ struct mos6502 {
     uint8_t sp;         // Stack pointer.
     uint8_t *mem;       // Memoria.
 
-    instruccion_t *inst; // puntero a la estructura de instruccion (actual)
+    instruccion_t *inst; // Puntero a la estructura de instruccion actual.
 
-    char *log;  // locacion absoluta del archivo log donde grabar
+    char *log;  // Locacion absoluta del archivo log donde grabar.
 
     long ciclos;        // Cantidad de ciclos totales de ejecución.
 };
@@ -68,8 +68,8 @@ bool cargar_rom(mos6502_t *p_mos, char *nombre_archivo){
     if (!f)
         return false;
 
-    p_mos->mem = malloc(65536*sizeof(uint8_t));
-    size_t n = fread(p_mos->mem, sizeof(uint8_t), 65536,f); // kibibytes
+    p_mos->mem = malloc(65536 * sizeof(uint8_t));
+    size_t n = fread(p_mos->mem, sizeof(uint8_t), 65536, f); // kibibytes
     
     if (n != 65536){
         fclose(f);
@@ -78,11 +78,8 @@ bool cargar_rom(mos6502_t *p_mos, char *nombre_archivo){
  
     fclose(f); 
 
-    uint8_t primer_byte  = (p_mos->mem)[0xFFFC];  //primer byte
-    uint8_t segundo_byte = (p_mos->mem)[0xFFFD];  //segundo byte
-
-    p_mos->pc = ((segundo_byte << 8) | primer_byte);
-    p_mos->sp = 0xff;
+    p_mos->pc = (((p_mos->mem)[0xFFFD] << 8) | (p_mos->mem)[0xFFFC]);
+    p_mos->sp = 0xFF;
    
     return true;
 }
@@ -95,8 +92,6 @@ uint16_t get_pc(mos6502_t *p_mos){
     return p_mos->pc;
 }
 
-
-// Ejecuta una instrucción del microprocesador
 void ejecutar_instruccion(mos6502_t * p_mos){
 
     uint8_t opcode = (p_mos->mem)[p_mos->pc]; 
@@ -111,7 +106,7 @@ void ejecutar_instruccion(mos6502_t * p_mos){
     
     f_direccionamiento_t direccionamiento = diccionario[opcode].dir; 
 
-    direccionamiento(p_mos); // esta setea el operando para dsp poder acceder desde operacion al operando que corresponda
+    direccionamiento(p_mos); 
 
     f_operaciones_t operacion = diccionario[opcode].op;
 
@@ -126,11 +121,10 @@ bool addto_log (mos6502_t * p_mos, char * nombre_archivo){
     FILE * f = fopen(nombre_archivo, "a");
     if (!f)
         return false;
-    fprintf(f,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp);
-    //fprintf(f,"%04x %02x %02x %02x %02x %02x opcode: %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp, p_mos->inst->codigo);
-    //fprintf(stdout,"%04x %02x %02x %02x %02x %02x opcode: %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp, p_mos->inst->codigo);
-   
+
+    fprintf(f,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp); 
     fclose(f);
+
     return true;
     
 }
@@ -147,10 +141,6 @@ bool setear_log (mos6502_t * p_mos, char * nombre_archivo){
     return true;
 }
 
-
-
-
-// Inicializa los registros del microprocesador
 void resetear_microprocesador(mos6502_t *m, uint8_t *mem, uint16_t pc) {
    
     m->a = m->x = m->y = 0;
