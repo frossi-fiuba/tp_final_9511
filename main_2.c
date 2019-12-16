@@ -8,7 +8,6 @@ int main(int argc, char *argv[]){
 
     long ciclos_max = 83007452;
     uint8_t halt;
-    char * halt_aux;
 
     if(argc > 8) 
       return 1; //Chequear que la condición esté bien.
@@ -29,9 +28,7 @@ int main(int argc, char *argv[]){
             }
         }
        else if(!strcmp(argv[i], "-halt")){
-            halt = strtol(argv[i+1], &halt_aux, 16); 
-            if(halt_aux)
-                return 1;
+            halt = atoi(argv[i+1]);
         }
         else if(!strcmp(argv[i], "-ciclos")){
             ciclos_max = atoi(argv[i + 1]); //Usar strtol en vez de atoi.
