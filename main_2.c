@@ -49,7 +49,7 @@ int main(int argc, char *argv[]){
         return 1;
     }
     
-    while (get_ciclos(micro) < ciclos_max && get_ciclos(micro) != halt){ // pc o puede ser inst->codigo?
+    while (get_ciclos(micro) < ciclos_max || get_ciclos(micro) != halt){ // pc o puede ser inst->codigo?
 
         ejecutar_instruccion(micro);
     }
