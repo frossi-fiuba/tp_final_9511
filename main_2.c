@@ -3,10 +3,11 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define CICLOS_MAX 83007452
 
 int main(int argc, char *argv[]){
 
-    long ciclos_max = 83007452;
+    long ciclos_max = CICLOS_MAX;
     uint8_t halt;
     char * halt_aux;
 
