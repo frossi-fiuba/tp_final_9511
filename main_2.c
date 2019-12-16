@@ -3,12 +3,11 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define CICLOS_MAX 83007452
-
 int main(int argc, char *argv[]){
 
     long ciclos_max = CICLOS_MAX;
     uint8_t halt;
+    char * halt_aux;
 
     if(argc > 8) 
       return 1; //Chequear que la condición esté bien.
@@ -29,7 +28,11 @@ int main(int argc, char *argv[]){
             }
         }
        else if(!strcmp(argv[i], "-halt")){
-            halt = atoi(argv[i+1]);
+            halt =strtol(argv[i+1, &halt_aux], 16);
+            if(halt_aux){
+                micro_destruir(micro);
+                return 1;
+            }
         }
         else if(!strcmp(argv[i], "-ciclos")){
             ciclos_max = atoi(argv[i + 1]); //Usar strtol en vez de atoi.

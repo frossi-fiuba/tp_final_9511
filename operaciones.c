@@ -42,8 +42,6 @@ void ADC(mos6502_t *p_mos){
 	set_overflow(&(p_mos->status), *(p_mos->inst->m), p_mos->a, aux);
 	p_mos->a = aux; */
 
-
-	
 	uint16_t aux = *(p_mos->inst->m) + get_status(&(p_mos->status), CARRY);
 	uint16_t res = p_mos->a + aux;
 	uint8_t aux_V1 = 0;
@@ -58,7 +56,6 @@ void ADC(mos6502_t *p_mos){
 
 	p_mos->a = res;
 	
-
 	/*
 	uint16_t aux = (p_mos->a)  + get_status(&(p_mos->status),CARRY);
 	set_overflow(&(p_mos->status), (p_mos->a), get_status((&p_mos->status),CARRY), aux);
