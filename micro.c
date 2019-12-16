@@ -33,6 +33,7 @@ struct mos6502 {
 
 
 mos6502_t *micro_crear(){
+
     mos6502_t *micro = calloc(1, sizeof(mos6502_t));
 
     if(!micro)
@@ -46,6 +47,7 @@ mos6502_t *micro_crear(){
 
 
 void micro_destruir(mos6502_t * micro){
+
     free (micro->mem);
     micro->mem = NULL;
     free(micro->inst);
@@ -124,8 +126,8 @@ bool addto_log (mos6502_t * p_mos, char * nombre_archivo){
     FILE * f = fopen(nombre_archivo, "a");
     if (!f)
         return false;
-    //fprintf(f,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp);
-    fprintf(f,"%04x %02x %02x %02x %02x %02x opcode: %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp, p_mos->inst->codigo);
+    fprintf(f,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp);
+    //fprintf(f,"%04x %02x %02x %02x %02x %02x opcode: %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp, p_mos->inst->codigo);
     fprintf(stdout,"%04x %02x %02x %02x %02x %02x opcode: %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp, p_mos->inst->codigo);
    
     fclose(f);
@@ -134,6 +136,7 @@ bool addto_log (mos6502_t * p_mos, char * nombre_archivo){
 }
 
 bool setear_log (mos6502_t * p_mos, char * nombre_archivo){
+
     p_mos->log = malloc(strlen(nombre_archivo) + 1);
     
     if(!p_mos->log)
@@ -147,6 +150,7 @@ bool setear_log (mos6502_t * p_mos, char * nombre_archivo){
 
 // Testea todos los registros del microprocesador contra los valores provistos
 void assert_microprocesador(const char *test, mos6502_t *m, uint16_t pc, uint8_t a, uint8_t x, uint8_t y, uint8_t status, uint8_t ciclos_micro) {
+    
     fprintf(stderr, "%s... ", test);
 
     assert(m->pc == pc);
@@ -161,6 +165,7 @@ void assert_microprocesador(const char *test, mos6502_t *m, uint16_t pc, uint8_t
 
 // Inicializa los registros del microprocesador
 void resetear_microprocesador(mos6502_t *m, uint8_t *mem, uint16_t pc) {
+   
     m->a = m->x = m->y = 0;
     m->status = 0x00;
 
