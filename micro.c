@@ -50,16 +50,16 @@ void micro_destruir(mos6502_t * micro){
 
     free (micro->mem);
     micro->mem = NULL;
-    free(micro->inst);
-    micro->inst = NULL;
     free (micro->log);
     micro->log = NULL;
+    free(micro->inst);
+    micro->inst = NULL;
     free (micro);
 }
 
 bool cargar_rom(mos6502_t *p_mos, char *nombre_archivo){
 
-    FILE *f = fopen(nombre_archivo,"rb");
+    FILE *f = fopen(nombre_archivo, "rb");
     
     if (!f)
         return false;
@@ -128,7 +128,7 @@ bool addto_log (mos6502_t * p_mos, char * nombre_archivo){
         return false;
     fprintf(f,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp);
     //fprintf(f,"%04x %02x %02x %02x %02x %02x opcode: %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp, p_mos->inst->codigo);
-    fprintf(stdout,"%04x %02x %02x %02x %02x %02x opcode: %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp, p_mos->inst->codigo);
+    //fprintf(stdout,"%04x %02x %02x %02x %02x %02x opcode: %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp, p_mos->inst->codigo);
    
     fclose(f);
     return true;
