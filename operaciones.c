@@ -40,8 +40,9 @@ void ADC(mos6502_t *p_mos){
     set_negative(&(p_mos->status), res);
     set_zero(&(p_mos->status), res);
 	set_overflow(&(p_mos->status), *(p_mos->inst->m), get_status(&(p_mos->status), CARRY), aux);
-	set_overflow(&(p_mos->status), p_mos->a, aux, res);
-
+	if(!get_status(&(p_mos->status),OVERFLOW)){
+		set_overflow(&(p_mos->status), p_mos->a, aux, res);
+	}
 	p_mos->a = res;
 
 	/*
@@ -427,8 +428,10 @@ void SBC(mos6502_t *p_mos){
     set_carry(&(p_mos->status), ~res);
     set_negative(&(p_mos->status), res);
     set_zero(&(p_mos->status), res);
-	set_overflow(&(p_mos->status), p_mos->a, -aux, res);
-
+	set_overflow(&(p_mos->status), *(p_mos->inst->m), get_status(&(p_mos->status), CARRY), aux);
+	if(!get_status(&(p_mos->status),OVERFLOW)){
+		set_overflow(&(p_mos->status), p_mos->a, ~aux, res);
+	}
 	p_mos->a = res;
 
 	/*
