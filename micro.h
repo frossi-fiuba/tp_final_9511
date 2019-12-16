@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#define CICLOS_MAX 83007452
 
 struct mos6502;
 typedef struct mos6502 mos6502_t;
