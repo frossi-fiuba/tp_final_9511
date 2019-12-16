@@ -137,7 +137,7 @@ bool addto_log (mos6502_t * p_mos, char * nombre_archivo){
 
 bool setear_log (mos6502_t * p_mos, char * nombre_archivo){
 
-    p_mos->log = malloc(strlen(nombre_archivo) + 1);
+    p_mos->log = realloc(p_mos->log, strlen(nombre_archivo) + 1);
     
     if(!p_mos->log)
         return false; 

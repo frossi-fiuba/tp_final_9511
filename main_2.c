@@ -6,7 +6,7 @@
 int main(int argc, char *argv[]){
 
     long ciclos_max = CICLOS_MAX;
-    uint16_t halt;
+    uint16_t halt = 0x33ed;
     char **halt_aux=NULL;
 
     if(argc > 8) 
