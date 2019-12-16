@@ -231,7 +231,7 @@ void CPY(mos6502_t *p_mos){
 
 void DE(mos6502_t *p_mos, uint8_t *registro){
 
-	*registro -= 1;
+	(*registro)--;
 	
 	set_zero (&(p_mos->status), *registro);
 	set_negative (&(p_mos->status), *registro);
@@ -262,7 +262,7 @@ void EOR(mos6502_t *p_mos){
 
 void INC_all(mos6502_t * p_mos,uint8_t * registro){
 
-	*registro += 1;
+	(*registro)++;
 
 	set_zero(&(p_mos->status), *registro);
 	set_negative(&(p_mos->status), *registro);
@@ -444,7 +444,7 @@ void SBC(mos6502_t *p_mos){
 	if(!get_status(&(p_mos->status),OVERFLOW)){
 		set_overflow(&(p_mos->status), p_mos->a, ~aux, res);
 	}
-	p_mos->a = res;
+	p_mos->a = (uint8_t)res;
 
 	/*
 	uint16_t aux = (p_mos->a)  - (!get_status((&p_mos->status),CARRY));
