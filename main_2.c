@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
             }
         }
        else if(!strcmp(argv[i], "-halt")){
-            halt =strtol(argv[i+1, &halt_aux], 16);
+            halt = strtol(argv[i+1], &halt_aux, 16);
             if(halt_aux){
                 micro_destruir(micro);
                 return 1;
