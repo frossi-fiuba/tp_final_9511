@@ -32,7 +32,7 @@ static void INC_all (mos6502_t * p_mos, uint8_t * registro);
 static void TRANSFER(mos6502_t *p_mos, uint8_t from, uint8_t *to);
 
 void ADC(mos6502_t *p_mos){
-	
+	/*
 	uint16_t aux = p_mos->a + *(p_mos->inst->m) + get_status(&(p_mos->status), CARRY);
 
 
@@ -40,22 +40,24 @@ void ADC(mos6502_t *p_mos){
     set_negative(&(p_mos->status), aux);
     set_zero(&(p_mos->status), aux);
 	set_overflow(&(p_mos->status), *(p_mos->inst->m), p_mos->a, aux);
-	p_mos->a = aux;
+	p_mos->a = aux; */
 
 
-	/*
+	
 	uint16_t aux = *(p_mos->inst->m) + get_status(&(p_mos->status), CARRY);
 	uint16_t res = p_mos->a + aux;
+	uint8_t aux_V1 = 0;
+	uint8_t aux_V2 = 0;
 
-    set_carry(&(p_mos->status), res);
+	set_overflow(&aux_V1, *(p_mos->inst->m), get_status(&(p_mos->status), CARRY), aux);
+	set_overflow(&aux_V2, p_mos->a, aux, res);
+	set_status(&(p_mos->status), OVERFLOW, aux_V1 ^ aux_V2);
+	set_carry(&(p_mos->status), res);
     set_negative(&(p_mos->status), res);
     set_zero(&(p_mos->status), res);
-	set_overflow(&(p_mos->status), *(p_mos->inst->m), get_status(&(p_mos->status), CARRY), aux);
-	if(!get_status(&(p_mos->status),OVERFLOW)){
-		set_overflow(&(p_mos->status), p_mos->a, aux, res);
-	}
+
 	p_mos->a = res;
-	*/
+	
 
 	/*
 	uint16_t aux = (p_mos->a)  + get_status(&(p_mos->status),CARRY);
@@ -434,9 +436,22 @@ void SBC(mos6502_t *p_mos){
 	set_overflow(&(p_mos->status), p_mos->a, -aux, res);
 	set_carry (&(p_mos->status), res);*/
 	
+	
+	
 	uint16_t aux = *(p_mos->inst->m) + !get_status(&(p_mos->status), CARRY);
 	uint16_t res = p_mos->a - aux;
+	uint8_t aux_V1 = 0;
+	uint8_t aux_V2 = 0;
 
+	set_overflow(&aux_V1, *(p_mos->inst->m), get_status(&(p_mos->status), CARRY), aux);
+	set_overflow(&aux_V2, p_mos->a, ~aux, res);
+	set_status(&(p_mos->status), OVERFLOW, aux_V1 ^ aux_V2);
+	set_carry(&(p_mos->status), ~res);
+    set_negative(&(p_mos->status), res);
+    set_zero(&(p_mos->status), res);
+	
+	p_mos->a = res;
+	/*
     set_carry(&(p_mos->status), ~res);
     set_negative(&(p_mos->status), res);
     set_zero(&(p_mos->status), res);
@@ -444,7 +459,7 @@ void SBC(mos6502_t *p_mos){
 	if(!get_status(&(p_mos->status),OVERFLOW)){
 		set_overflow(&(p_mos->status), p_mos->a, ~aux, res);
 	}
-	p_mos->a = (uint8_t)res;
+	p_mos->a = (uint8_t)res; */
 
 	/*
 	uint16_t aux = (p_mos->a)  - (!get_status((&p_mos->status),CARRY));
