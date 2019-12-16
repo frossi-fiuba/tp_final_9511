@@ -33,6 +33,17 @@ static void TRANSFER(mos6502_t *p_mos, uint8_t from, uint8_t *to);
 
 void ADC(mos6502_t *p_mos){
 	
+	uint16_t aux = p_mos->a + *(p_mos->inst->m) + get_status(&(p_mos->status), CARRY);
+
+
+    set_carry(&(p_mos->status), aux);
+    set_negative(&(p_mos->status), aux);
+    set_zero(&(p_mos->status), aux);
+	set_overflow(&(p_mos->status), *(p_mos->inst->m), p_mos->a, aux);
+	p_mos->a = aux;
+
+
+	/*
 	uint16_t aux = *(p_mos->inst->m) + get_status(&(p_mos->status), CARRY);
 	uint16_t res = p_mos->a + aux;
 
@@ -44,6 +55,7 @@ void ADC(mos6502_t *p_mos){
 		set_overflow(&(p_mos->status), p_mos->a, aux, res);
 	}
 	p_mos->a = res;
+	*/
 
 	/*
 	uint16_t aux = (p_mos->a)  + get_status(&(p_mos->status),CARRY);
