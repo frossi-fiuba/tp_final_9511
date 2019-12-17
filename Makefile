@@ -1,4 +1,4 @@
-PROGRAM=main
+PROGRAM=tp1
 CC=gcc
 CDFLAGS=-Wall -std=c99 -pedantic -g
 LDFLAGS=-lm
