@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#define CICLOS_MAX 83007452
+#define CICLOS_MAX 83400598
 #define HALT_MAX 0x336d
 
 struct mos6502;
