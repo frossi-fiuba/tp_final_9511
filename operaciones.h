@@ -3,6 +3,8 @@
 
 #include "micro.h"
 
+#define PAGE_1 0x0100
+
 typedef void(*f_operaciones_t)(mos6502_t *);
 
 void ADC (mos6502_t *p_mos);

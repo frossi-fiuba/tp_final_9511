@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-
 typedef struct {
     uint8_t codigo;     // Opcode.
     short ciclos;       // Cantidad de ciclos de la instrucción.
@@ -33,15 +32,10 @@ static void TRANSFER(mos6502_t *p_mos, uint8_t from, uint8_t *to);
 
 void ADC(mos6502_t *p_mos){
 
-	uint16_t aux = *(p_mos->inst->m) + get_status(&(p_mos->status), CARRY);
-	uint16_t res = p_mos->a + aux;
-	uint8_t aux_V1 = 0;
-	uint8_t aux_V2 = 0;
+	uint16_t res = p_mos->a + *(p_mos->inst->m) + get_status(&(p_mos->status), CARRY);
 
-	set_overflow(&aux_V1, *(p_mos->inst->m), get_status(&(p_mos->status), CARRY), aux);
-	set_overflow(&aux_V2, p_mos->a, aux, res);
-	set_status(&(p_mos->status), OVERFLOW, aux_V1 ^ aux_V2);
-	set_carry(&(p_mos->status), res);
+ 	set_overflow(&(p_mos->status), *(p_mos->inst->m), p_mos->a, res);
+ 	set_carry(&(p_mos->status), res);
     set_negative(&(p_mos->status), res);
     set_zero(&(p_mos->status), res);
 
@@ -114,11 +108,11 @@ void BPL(mos6502_t *p_mos){
 void BRK(mos6502_t *p_mos){
 
 	uint16_t aux = p_mos->pc + 1;
-	p_mos->mem[0x100|p_mos->sp] = (aux & 0xFF00) >> 8;
+	p_mos->mem[PAGE_1|p_mos->sp] = (aux & 0xFF00) >> 8;
 	p_mos->sp--;
-	p_mos->mem[0x100|p_mos->sp] = aux & 0x00FF;
+	p_mos->mem[PAGE_1|p_mos->sp] = aux & 0x00FF;
 	p_mos->sp--;
-	p_mos->mem[0x100|p_mos->sp] = p_mos->status | (1<<4) | (1<<5);
+	p_mos->mem[PAGE_1|p_mos->sp] = p_mos->status | 0x30; // 0x30 setea los bits 4 y 5.
 	p_mos->sp--;
 	p_mos->pc = (p_mos->mem[0xFFFF] << 8) | p_mos->mem[0xFFFE];
 	set_status(&(p_mos->status), INTERRUPT_DISABLE, 1);	
@@ -239,9 +233,9 @@ void JMP(mos6502_t *p_mos){
 
 void JSR(mos6502_t *p_mos){
 
-	p_mos->mem[0x0100|p_mos->sp] = (p_mos->pc - 1) >> 8;
+	p_mos->mem[PAGE_1|p_mos->sp] = (p_mos->pc - 1) >> 8;
 	p_mos->sp--;
-	p_mos->mem[0x0100|p_mos->sp] = p_mos->pc -1;
+	p_mos->mem[PAGE_1|p_mos->sp] = p_mos->pc - 1;
 	p_mos->sp--;
 	p_mos->pc = p_mos->inst->direccion;
 }
@@ -293,21 +287,20 @@ void ORA(mos6502_t *p_mos){
 
 void PHA(mos6502_t *p_mos){
 	
-	p_mos->mem[0x0100 | p_mos->sp] = p_mos->a;
+	p_mos->mem[PAGE_1 | p_mos->sp] = p_mos->a;
 	p_mos->sp--;
 }
 
 void PHP(mos6502_t *p_mos){
 	
-	p_mos->mem[0x0100 | p_mos->sp] = p_mos->status | (1<<4) | (1<<5);
-	p_mos->sp--;
+	p_mos->mem[PAGE_1 | p_mos->sp] = p_mos->status | 0x30; // &0x30 setea los bits 4 y 5.
 
 }
 
 void PLA(mos6502_t *p_mos){
 
 	p_mos->sp++;
-	p_mos->a = p_mos->mem[0x0100 | p_mos->sp];
+	p_mos->a = p_mos->mem[PAGE_1 | p_mos->sp];
 
 	set_zero (&(p_mos->status), p_mos->a);
 	set_negative (&(p_mos->status), p_mos->a);
@@ -316,7 +309,7 @@ void PLA(mos6502_t *p_mos){
 void PLP(mos6502_t *p_mos){
 	
 	p_mos->sp++;
-	p_mos->status = (p_mos->mem[0x0100 | p_mos->sp] & 0xCF);
+	p_mos->status = (p_mos->mem[PAGE_1 | p_mos->sp] & 0xCF); // &0xCF ignora el estado de los bits 4 y 5. 
 }
 
 void ROL(mos6502_t *p_mos){
@@ -340,20 +333,20 @@ void RTI(mos6502_t *p_mos){
 	PLP(p_mos);
 
 	p_mos->sp++;
-	uint8_t primer_byte  = (p_mos->mem)[0x0100 | p_mos->sp]; 
+	uint8_t primer_byte  = (p_mos->mem)[PAGE_1 | p_mos->sp]; 
 	p_mos->sp++;  
 	
-	p_mos->pc = (((p_mos->mem)[0x0100 | p_mos->sp] << 8) | primer_byte);
+	p_mos->pc = (((p_mos->mem)[PAGE_1 | p_mos->sp] << 8) | primer_byte);
 	
 }
 
 void RTS(mos6502_t *p_mos){
 
 	p_mos->sp++;
-	uint8_t primer_byte  = (p_mos->mem)[0x0100 | p_mos->sp]; 
+	uint8_t primer_byte  = (p_mos->mem)[PAGE_1 | p_mos->sp]; 
 	p_mos->sp++;
 	
-	p_mos->pc = (((p_mos->mem)[0x0100 | p_mos->sp] << 8) | primer_byte) + 1;
+	p_mos->pc = (((p_mos->mem)[PAGE_1 | p_mos->sp] << 8) | primer_byte) + 1;
 }
 
 void SBC(mos6502_t *p_mos){
