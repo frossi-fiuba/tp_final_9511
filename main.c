@@ -6,7 +6,8 @@
 int main(int argc, char *argv[]){
     
     long ciclos_max = CICLOS_MAX;
-    uint16_t halt = HALT_MAX;
+    bool halt_b = false;
+    uint16_t halt;
     char **aux = NULL;
 
     if(argc > 8) 
@@ -32,6 +33,7 @@ int main(int argc, char *argv[]){
             if(aux && **aux != '\n'){
                 micro_destruir(micro);
                 return 1;
+            halt_b = true;
             }
         }
         else if(!strcmp(argv[i], "-ciclos")){
@@ -55,9 +57,18 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
-    while (get_ciclos(micro) <= ciclos_max && get_pc(micro) != halt){ 
-        ejecutar_instruccion(micro);
-    }
+
+	if (halt_b){
+		while (get_ciclos(micro) <= ciclos_max && get_pc(micro) != halt){ 
+		    ejecutar_instruccion(micro);
+		}
+	}
+
+	else {
+	    while (get_ciclos(micro) <= ciclos_max){ 
+	        ejecutar_instruccion(micro);
+	    }
+	}
 
     micro_destruir(micro);
 
