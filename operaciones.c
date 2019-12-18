@@ -287,13 +287,12 @@ void ORA(mos6502_t *p_mos){
 
 void PHA(mos6502_t *p_mos){
 	
-	p_mos->mem[PAGE_1 | p_mos->sp] = p_mos->a;
-	p_mos->sp--;
+	p_mos->mem[PAGE_1 | p_mos->sp--] = p_mos->a;
 }
 
 void PHP(mos6502_t *p_mos){
 	
-	p_mos->mem[PAGE_1 | p_mos->sp] = p_mos->status | 0x30; // &0x30 setea los bits 4 y 5.
+	p_mos->mem[PAGE_1 | p_mos->sp--] = p_mos->status | 0x30; // &0x30 setea los bits 4 y 5.
 
 }
 
@@ -333,8 +332,7 @@ void RTI(mos6502_t *p_mos){
 	PLP(p_mos);
 
 	p_mos->sp++;
-	uint8_t primer_byte  = (p_mos->mem)[PAGE_1 | p_mos->sp]; 
-	p_mos->sp++;  
+	uint8_t primer_byte  = (p_mos->mem)[PAGE_1 | p_mos->sp++]; 
 	
 	p_mos->pc = (((p_mos->mem)[PAGE_1 | p_mos->sp] << 8) | primer_byte);
 	
@@ -343,8 +341,7 @@ void RTI(mos6502_t *p_mos){
 void RTS(mos6502_t *p_mos){
 
 	p_mos->sp++;
-	uint8_t primer_byte  = (p_mos->mem)[PAGE_1 | p_mos->sp]; 
-	p_mos->sp++;
+	uint8_t primer_byte  = (p_mos->mem)[PAGE_1 | p_mos->sp++]; 
 	
 	p_mos->pc = (((p_mos->mem)[PAGE_1 | p_mos->sp] << 8) | primer_byte) + 1;
 }

@@ -123,7 +123,8 @@ bool addto_log (mos6502_t * p_mos, char * nombre_archivo){
         return false;
 
     fprintf(f,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp); 
-    fprintf(stdout,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp); 
+    //fprintf(stdout,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp); 
+    // ^^^^ comentado para pruebas ^^^^
     fclose(f);
 
     return true;

@@ -30,11 +30,12 @@ int main(int argc, char *argv[]){
         }
        else if(!strcmp(argv[i], "-halt")){
             halt = strtol(argv[i+1], aux, 16);
+            printf("%04x\n",halt);
             if(aux && **aux != '\n'){
                 micro_destruir(micro);
                 return 1;
-            halt_b = true;
             }
+            halt_b = true;
         }
         else if(!strcmp(argv[i], "-ciclos")){
             ciclos_max = strtol(argv[i + 1], aux, 10);
