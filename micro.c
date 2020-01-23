@@ -10,28 +10,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-typedef struct {
-    uint8_t codigo;     // Opcode.
-    short ciclos;       // Cantidad de ciclos de la instrucción.
-    uint8_t *m;         // Puntero al operando (registro o memoria).
-    uint16_t direccion; // Dirección del operando (si corresponde).
-} instruccion_t;
-
-struct mos6502 {
-    uint8_t a, x, y;    // Registros A, X e Y.
-    uint16_t pc;        // Program counter.
-    uint8_t status;     // Registro de status.
-    uint8_t sp;         // Stack pointer.
-    uint8_t *mem;       // Memoria.
-
-    instruccion_t *inst; // Puntero a la estructura de instruccion actual.
-
-    char *log;  // Locacion absoluta del archivo log donde grabar.
-
-    long ciclos;        // Cantidad de ciclos totales de ejecución.
-};
-
-
 mos6502_t *micro_crear(){
 
     mos6502_t *micro = calloc(1, sizeof(mos6502_t));
@@ -39,25 +17,13 @@ mos6502_t *micro_crear(){
     if(!micro)
         return NULL;
 
-    setear_log(micro ,"log_d");
-
-    micro->inst = calloc (1, sizeof(instruccion_t));
-
-    if(!(micro->inst))
-        return NULL;
-
     return micro;
 }
 
-
-void micro_destruir(mos6502_t * micro){
+void micro_destruir(mos6502_t *micro){
 
     free (micro->mem);
     micro->mem = NULL;
-    free (micro->log);
-    micro->log = NULL;
-    free(micro->inst);
-    micro->inst = NULL;
     free (micro);
 }
 
@@ -92,27 +58,29 @@ uint16_t get_pc(mos6502_t *p_mos){
     return p_mos->pc;
 }
 
-void ejecutar_instruccion(mos6502_t * p_mos){
+void ejecutar_instruccion(mos6502_t *p_mos, char *log_file){
 
     uint8_t opcode = (p_mos->mem)[p_mos->pc]; 
 
-    addto_log(p_mos, p_mos->log);
+    addto_log(p_mos, log_file);
 
     p_mos->pc++;
 
-    ((*(p_mos->inst)).codigo) = opcode;
+    instruccion_t instruccion;
 
-    ((*(p_mos->inst)).ciclos) = diccionario[opcode].ciclos;
+    (instruccion.codigo) = opcode;
+
+    (instruccion.ciclos) = diccionario[opcode].ciclos;
     
     f_direccionamiento_t direccionamiento = diccionario[opcode].dir; 
 
-    direccionamiento(p_mos); 
+    direccionamiento(p_mos, &instruccion); 
 
     f_operaciones_t operacion = diccionario[opcode].op;
 
-    operacion (p_mos);
+    operacion (p_mos, &instruccion);
 
-    (p_mos->ciclos) += ((*(p_mos->inst)).ciclos);
+    (p_mos->ciclos) += (instruccion.ciclos);
 
 }
 
@@ -123,7 +91,7 @@ bool addto_log (mos6502_t * p_mos, char * nombre_archivo){
         return false;
 
     fprintf(f,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp); 
-    //fprintf(stdout,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp); 
+    fprintf(stdout,"%04x %02x %02x %02x %02x %02x\n", p_mos->pc, p_mos->a, p_mos->x, p_mos->y, p_mos->status, p_mos->sp); 
     // ^^^^ comentado para pruebas ^^^^
     fclose(f);
 
@@ -131,16 +99,8 @@ bool addto_log (mos6502_t * p_mos, char * nombre_archivo){
     
 }
 
-bool setear_log (mos6502_t * p_mos, char * nombre_archivo){
-
-    p_mos->log = realloc(p_mos->log, strlen(nombre_archivo) + 1);
-    
-    if(!p_mos->log)
-        return false; 
-    
-    strcpy(p_mos->log, nombre_archivo); 
-
-    return true;
+void destruir_log (char * nombre_archivo){
+    free (nombre_archivo);
 }
 
 void resetear_microprocesador(mos6502_t *m, uint8_t *mem, uint16_t pc) {

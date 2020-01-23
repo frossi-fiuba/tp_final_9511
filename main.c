@@ -9,6 +9,7 @@ int main(int argc, char *argv[]){
     bool halt_b = false;
     uint16_t halt;
     char **aux = NULL;
+    char * log_file = "log_default";
 
     if(argc > 8) 
       return 1; 
@@ -23,10 +24,7 @@ int main(int argc, char *argv[]){
     
     for(size_t i = 2; i < argc; i += 2){
         if(!strcmp(argv[i], "-log")){
-            if(!setear_log(micro ,argv[i+1])){
-                micro_destruir(micro);
-                return 1;
-            }
+            strcpy(log_file, argv[i+1]); 
         }
        else if(!strcmp(argv[i], "-halt")){
             halt = strtol(argv[i+1], aux, 16);
@@ -61,13 +59,13 @@ int main(int argc, char *argv[]){
 
 	if (halt_b){
 		while (get_ciclos(micro) <= ciclos_max && get_pc(micro) != halt){ 
-		    ejecutar_instruccion(micro);
+		    ejecutar_instruccion(micro, log_file);
 		}
 	}
 
 	else {
 	    while (get_ciclos(micro) <= ciclos_max){ 
-	        ejecutar_instruccion(micro);
+	        ejecutar_instruccion(micro, log_file);
 	    }
 	}
 
