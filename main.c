@@ -24,9 +24,9 @@ int main(int argc, char *argv[]){
     
     for(size_t i = 2; i < argc; i += 2){
         if(!strcmp(argv[i], "-log")){
-            strcpy(log_file, argv[i+1]); 
+            log_file = argv[i+1];
         }
-       else if(!strcmp(argv[i], "-halt")){
+        else if(!strcmp(argv[i], "-halt")){
             halt = strtol(argv[i+1], aux, 16);
             printf("%04x\n",halt);
             if(aux && **aux != '\n'){

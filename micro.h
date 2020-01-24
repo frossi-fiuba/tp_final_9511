@@ -24,7 +24,6 @@ typedef struct mos6502 {
 } mos6502_t;
 
 
-
 /* Crea el microprocesador.
  * Post: Devuelve un mos6502 con el log seteado por default en "log_d".*/
 mos6502_t * micro_crear();
@@ -42,7 +41,6 @@ bool cargar_rom(mos6502_t *, char *);
  * Pre: El micro pasado por parámetroy el log deben existir.
  * Post: Devuelve false si no pudo realizar la operación y true si fue exitosa. */
 bool addto_log (mos6502_t *, char *);
-
 
 /* Devuelve la cantidad de ciclos del procesador hasta el momento.
  * Pre: El micro pasado por parámetro debe estar creado.*/
